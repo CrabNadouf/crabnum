@@ -127,14 +127,6 @@ from nadouf_math import Nadoufmath
 
 ## 🎖 Functional API (functions)
 
-Functions and methods take lists as arguments:
-
-```python
-print(sum_of([5, 5]))
-print(dif_of([1025, 79]))
-print(div_of([30, 20]))
-```
-
 #### Basic Arithmetic 
 | Function | Description | Example | Result |
 |----------|-------------|---------|--------|
