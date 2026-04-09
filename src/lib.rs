@@ -1,83 +1,130 @@
-// start refactoring 
-
-use pyo3::exceptions::{PyValueError, PyZeroDivisionError};
+use pyo3::exceptions::{PyValueError, PyZeroDivisionError, PyOverflowError};
 use pyo3::prelude::*;
 
-#[pyfunction]
-fn sum_of(args: Vec<f64>) -> f64 {
-    args.iter().sum()
-}
 
 #[pyfunction]
-fn dif_of(args: Vec<f64>) -> f64 {
-    if args.is_empty() {
-        0.0
-    } else {
-        let mut result = args[0];
-        for &i in &args[1..] {
-            result -= i;
-        }
-        result
+/// Returns the sum of the numbers in the list.
+/// # Arguments
+/// `args` - Vector with float numbers
+pub fn sum_of(args: Vec<f64>) -> Result<f64, PyErr> { 
+    let result: f64 = args.iter().sum();
+    match !result.is_finite() {
+        true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+        false => Ok(result)
     }
 }
 
+
 #[pyfunction]
-fn div_of(args: Vec<f64>) -> PyResult<f64> {
-    if args.is_empty() {
-        Ok(0.0)
-    } else {
-        let mut result = args[0];
-        for &i in &args[1..] {
-            if i == 0.0 {
-                return Err(PyZeroDivisionError::new_err("Division by zero!"));
+/// Returns the difference between the first number and the sum of the other numbers in the list.
+/// # Arguments
+/// `args` - Vector with float numbers
+pub fn dif_of(args: Vec<f64>) -> Result<f64, PyErr> {
+    match args.as_slice() {
+        [] => Ok(0.0),
+        [first, rest @..] => {
+            let result = *first - rest.iter().sum::<f64>();
+            match !result.is_finite() { 
+                true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+                false => Ok(result)
             }
-            result /= i;
-        }
-        Ok(result)
+        },
     }
 }
 
+
 #[pyfunction]
-fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
-    if args.is_empty() {
-        Ok(0)
-    } else {
-        let mut result = args[0];
-        for &i in &args[1..] {
-            if i == 0 {
-                return Err(PyZeroDivisionError::new_err("Division by zero!"));
+/// Returns the result of consecutive division of the numbers in the list.
+/// # Arguments
+/// `args` - Vector with float numbers
+pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
+    match args.as_slice() {
+        [] => Ok(0.0),
+        [first, rest@..] => {
+            let mut result = *first;
+            for &i in rest {
+                if i == 0.0 {
+                    return Err(PyZeroDivisionError::new_err("Division by zero!"));
+                }
+            result /= i;
             }
-            result /= i;
+            match !result.is_finite() {
+                true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+                false => Ok(result)
+            }
         }
-        Ok(result)
+    }
+}
+
+
+#[pyfunction]
+/// Returns the result of consecutive integer division of the numbers in the list.
+/// # Arguments
+/// `args` - Vector with integer numbers
+pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
+    match args.as_slice() {
+        [] => Ok(0),
+        [first, rest@..] => {
+            let mut result = *first;
+            for &i in rest {
+                if i == 0 {
+                    return Err(PyZeroDivisionError::new_err("Division by zero!"))
+                }
+                match result == i64::MIN && i == -1 {
+                    true => return Err(PyOverflowError::new_err("Integer overflow: MIN / -1")),
+                    false => {
+                        result /= i
+                    }
+                }          
+            }  
+
+            Ok(result)
+        }
+    }
+}
+
+
+#[pyfunction]
+/// Returns product of all numbers in the list.
+/// # Arguments
+/// `args` - Vector with float numbers
+pub fn mult_of(args: Vec<f64>) -> Result<f64, PyErr> {
+    match args.as_slice() {
+        [] => Ok(0.0),
+        [first, rest @..] => {
+            let mut result = *first;
+            for &i in rest {
+                result *= i
+            }
+            match !result.is_finite() {
+                true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+                false => Ok(result)
+            }
+        }
+    }
+}
+
+
+#[pyfunction]
+/// Returns the square of number in the list.
+/// # Arguments
+/// `number` - float number
+pub fn square(number: f64) -> Result<f64, PyErr> {
+    let result = number * number;
+    match !result.is_finite() {
+        true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+        false => Ok(result)
     }
 }
 
 #[pyfunction]
-fn mult_of(args: Vec<f64>) -> f64 {
-    if args.is_empty() {
-        1.0
-    } else {
-        let mut result = args[0];
-        for &i in &args[1..] {
-            result *= i;
-        }
-        result
-    }
-}
-
-#[pyfunction]
-fn square(number: f64) -> f64 {
-    number * number
-}
-
-#[pyfunction]
-fn cube(number: f64) -> f64 {
+// cube of number
+pub fn cube(number: f64) -> f64 {
     number * number * number
 }
 
 #[pyfunction]
-fn power(number: f64, exponent: f64) -> f64 {
+pub fn power(number: f64, exponent: f64) -> f64 {
     number.powf(exponent)
 }
 
