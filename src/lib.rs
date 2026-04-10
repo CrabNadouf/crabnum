@@ -6,10 +6,10 @@ use pyo3::prelude::*;
 /// Returns the sum of the numbers in the list.
 /// # Arguments
 /// `args` - Vector with float numbers
-pub fn sum_of(args: Vec<f64>) -> Result<f64, PyErr> { 
+pub fn sum_of(args: Vec<f64>) -> PyResult<f64> { 
     let result: f64 = args.iter().sum();
     match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
         false => Ok(result)
     }
 }
@@ -19,13 +19,13 @@ pub fn sum_of(args: Vec<f64>) -> Result<f64, PyErr> {
 /// Returns the difference between the first number and the sum of the other numbers in the list.
 /// # Arguments
 /// `args` - Vector with float numbers
-pub fn dif_of(args: Vec<f64>) -> Result<f64, PyErr> {
+pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
     match args.as_slice() {
         [] => Ok(0.0),
         [first, rest @..] => {
             let result = *first - rest.iter().sum::<f64>();
             match !result.is_finite() { 
-                true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
                 false => Ok(result)
             }
         },
@@ -49,7 +49,7 @@ pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
             result /= i;
             }
             match !result.is_finite() {
-                true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
                 false => Ok(result)
             }
         }
@@ -88,7 +88,7 @@ pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
 /// Returns product of all numbers in the list.
 /// # Arguments
 /// `args` - Vector with float numbers
-pub fn mult_of(args: Vec<f64>) -> Result<f64, PyErr> {
+pub fn mult_of(args: Vec<f64>) -> PyResult<f64> {
     match args.as_slice() {
         [] => Ok(0.0),
         [first, rest @..] => {
@@ -97,7 +97,7 @@ pub fn mult_of(args: Vec<f64>) -> Result<f64, PyErr> {
                 result *= i
             }
             match !result.is_finite() {
-                true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
                 false => Ok(result)
             }
         }
@@ -106,61 +106,97 @@ pub fn mult_of(args: Vec<f64>) -> Result<f64, PyErr> {
 
 
 #[pyfunction]
-/// Returns the square of number in the list.
+/// Returns the square of `number`.
 /// # Arguments
 /// `number` - float number
-pub fn square(number: f64) -> Result<f64, PyErr> {
+pub fn square(number: f64) -> PyResult<f64> {
     let result = number * number;
     match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is Infinite or NaN")),
+        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
         false => Ok(result)
     }
 }
 
-#[pyfunction]
-// cube of number
-pub fn cube(number: f64) -> f64 {
-    number * number * number
-}
 
 #[pyfunction]
-pub fn power(number: f64, exponent: f64) -> f64 {
-    number.powf(exponent)
+/// Returns the cube of `number`.
+/// # Arguments
+/// `number` - float number
+pub fn cube(number: f64) -> PyResult<f64> {
+    let result = number.powi(3);
+    match !result.is_finite() {
+        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
+        false => Ok(result)
+    }
 }
 
+
 #[pyfunction]
+/// Returns `number` to the power of `power`.
+/// # Arguments
+/// `number` - float number
+/// `exponent` - float number
+pub fn power(number: f64, exponent: f64) -> PyResult<f64> {
+    let result = number.powf(exponent);
+    match !result.is_finite() {
+        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
+        false => Ok(result)
+    }
+}
+
+
+#[pyfunction]
+/// Returns the square root of `number`.
+/// # Arguments
+/// `number` - float number
 fn square_root(number: f64) -> PyResult<f64> {
-    if number < 0.0 {
-        return Err(PyValueError::new_err(
-            "Cannot calculate square root of a negative number",
-        ));
+    match number < 0.0 {
+        true => Err(PyValueError::new_err("Cannot calculate square root of a negative number")),
+        false => {
+            let result = number.powf(0.5);
+            match !result.is_finite() {
+                true => Err(PyOverflowError::new_err("Result is infinite of Nan")),
+                false => Ok(result)
+            }
+        }
     }
-    Ok(number.sqrt())
 }
 
-#[pyfunction]
-fn cube_root(number: f64) -> f64 {
-    number.cbrt()
-}
 
 #[pyfunction]
+/// Returns the cube root of `number`.
+/// # Arguments
+/// `number` - float number
+fn cube_root(number: f64) -> PyResult<f64> {
+    let result = number.powf(1.0/3.0);
+    match !result.is_finite() {
+        true => Err(PyOverflowError::new_err("Result is infinite of Nan")),
+        false => Ok(result)
+    }
+}
+
+
+#[pyfunction]
+/// Returns the factorial of `number`.
+/// # Arguments
+/// `number` - integer number
 fn factorial(number: i64) -> PyResult<i64> {
-    if number < 0 {
-        return Err(PyValueError::new_err(
-            "The factorial of a negative number is not defined.",
-        ));
+    match number < 0 {
+        true => Err(PyValueError::new_err("The factorial of a negative number is not defined.")),
+        false => {
+            let mut result: i64 = 1;
+            for i in 2..=number {
+                result = match result.checked_mul(i) {
+                    Some(val) => val,
+                    None => return Err(PyValueError::new_err("Factorial overflow")),
+                };
+             }
+            Ok(result)
+         }
     }
-
-    let mut result: i64 = 1;
-    for i in 2..=number {
-        result = match result.checked_mul(i) {
-            Some(val) => val,
-            None => return Err(PyValueError::new_err("Factorial overflow")),
-        };
-    }
-    Ok(result)
 }
 
+ 
 #[pyfunction]
 fn gcd_with_int(args: Vec<i64>) -> PyResult<i64> {
     if args.is_empty() {

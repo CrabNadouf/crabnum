@@ -24,7 +24,6 @@ pip-selfcheck.json
 target/
 target/
 .rs.bk
-Cargo.lock
 
 # Testing
 test.py
