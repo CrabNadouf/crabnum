@@ -5,10 +5,9 @@ use pyo3::prelude::*;
 #[pyfunction]
 /// Returns the sum of the numbers in the list.
 /// # Arguments
-/// `args` - a list with float numbers
+/// `args` - Vector with float numbers
 pub fn sum_of(args: Vec<f64>) -> PyResult<f64> { 
     let result: f64 = args.iter().sum();
-    
     match !result.is_finite() {
         true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
         false => Ok(result)
@@ -19,19 +18,17 @@ pub fn sum_of(args: Vec<f64>) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the difference between the first number and the sum of the other numbers in the list.
 /// # Arguments
-/// `args` - a list  with float numbers
+/// `args` - Vector with float numbers
 pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
     match args.as_slice() {
         [] => Ok(0.0),
         [first, rest @..] => {
             let result = *first - rest.iter().sum::<f64>();
-            
             match !result.is_finite() { 
                 true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
                 false => Ok(result)
             }
-            
-        }
+        },
     }
 }
 
@@ -39,21 +36,18 @@ pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the result of consecutive division of the numbers in the list.
 /// # Arguments
-/// `args` - a list with float numbers
+/// `args` - Vector with float numbers
 pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
     match args.as_slice() {
         [] => Ok(0.0),
         [first, rest@..] => {
             let mut result = *first;
-            
             for &i in rest {
                 if i == 0.0 {
                     return Err(PyZeroDivisionError::new_err("Division by zero!"));
                 }
-                
             result /= i;
             }
-            
             match !result.is_finite() {
                 true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
                 false => Ok(result)
@@ -66,18 +60,16 @@ pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the result of consecutive integer division of the numbers in the list.
 /// # Arguments
-/// `args` - a Vector with integer numbers
+/// `args` - Vector with integer numbers
 pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
     match args.as_slice() {
         [] => Ok(0),
         [first, rest@..] => {
             let mut result = *first;
-            
             for &i in rest {
                 if i == 0 {
                     return Err(PyZeroDivisionError::new_err("Division by zero!"))
                 }
-                
                 match result == i64::MIN && i == -1 {
                     true => return Err(PyOverflowError::new_err("Integer overflow: MIN / -1")),
                     false => {
@@ -95,17 +87,15 @@ pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
 #[pyfunction]
 /// Returns product of all numbers in the list.
 /// # Arguments
-/// `args` - a Vector with float numbers
+/// `args` - Vector with float numbers
 pub fn mult_of(args: Vec<f64>) -> PyResult<f64> {
     match args.as_slice() {
         [] => Ok(0.0),
         [first, rest @..] => {
             let mut result = *first;
-            
             for &i in rest {
                 result *= i
             }
-            
             match !result.is_finite() {
                 true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
                 false => Ok(result)
@@ -118,10 +108,9 @@ pub fn mult_of(args: Vec<f64>) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the square of `number`.
 /// # Arguments
-/// `number` - a float number
+/// `number` - float number
 pub fn square(number: f64) -> PyResult<f64> {
     let result = number * number;
-    
     match !result.is_finite() {
         true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
         false => Ok(result)
@@ -132,10 +121,9 @@ pub fn square(number: f64) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the cube of `number`.
 /// # Arguments
-/// `number` - a float number
+/// `number` - float number
 pub fn cube(number: f64) -> PyResult<f64> {
     let result = number.powi(3);
-    
     match !result.is_finite() {
         true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
         false => Ok(result)
@@ -146,11 +134,10 @@ pub fn cube(number: f64) -> PyResult<f64> {
 #[pyfunction]
 /// Returns `number` to the power of `power`.
 /// # Arguments
-/// `number` - a float number
-/// `exponent` - a float number
+/// `number` - float number
+/// `exponent` - float number
 pub fn power(number: f64, exponent: f64) -> PyResult<f64> {
     let result = number.powf(exponent);
-    
     match !result.is_finite() {
         true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
         false => Ok(result)
@@ -161,15 +148,14 @@ pub fn power(number: f64, exponent: f64) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the square root of `number`.
 /// # Arguments
-/// `number` - a float number
+/// `number` - float number
 fn square_root(number: f64) -> PyResult<f64> {
     match number < 0.0 {
         true => Err(PyValueError::new_err("Cannot calculate square root of a negative number")),
         false => {
             let result = number.powf(0.5);
-            
             match !result.is_finite() {
-                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
+                true => Err(PyOverflowError::new_err("Result is infinite of Nan")),
                 false => Ok(result)
             }
         }
@@ -180,38 +166,14 @@ fn square_root(number: f64) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the cube root of `number`.
 /// # Arguments
-/// `number` - a float number
+/// `number` - float number
 fn cube_root(number: f64) -> PyResult<f64> {
     let result = number.powf(1.0/3.0);
-    
     match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
+        true => Err(PyOverflowError::new_err("Result is infinite of Nan")),
         false => Ok(result)
     }
 }
-
-
-#[pyfunction]
-/// Returns the `power`-th root of `number`.
-/// # Arguments
-/// `number` - a  float number
-/// `power` - a float number
-fn root(number: f64, power: f64) -> PyResult<f64> {
-	if power == 0.0 {
-		return Err(PyValueError::new_err("Power cannot be zero."))
-	 } else {
-	 	if number < 0.0 && power % 2.0 == 0.0 {
-	 		return Err(PyValueError::new_err("Cannot calculate even root of a negative number"))
-	 	} else {
-	 		let result = number.powf(1.0/power);
-	 		
-	 		match !result.is_finite() {
-	 			true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-	 			false => Ok(result)
-		 	}
-		 }
-	}
- }
 
 
 #[pyfunction]
@@ -223,7 +185,6 @@ fn factorial(number: i64) -> PyResult<i64> {
         true => Err(PyValueError::new_err("The factorial of a negative number is not defined.")),
         false => {
             let mut result: i64 = 1;
-            
             for i in 2..=number {
                 result = match result.checked_mul(i) {
                     Some(val) => val,
@@ -237,9 +198,6 @@ fn factorial(number: i64) -> PyResult<i64> {
 
  
 #[pyfunction]
-/// Returns the greatest common divisor of the integer numbers in the list.
-/// # Arguments
-/// `args` - a list of integers
 fn gcd_with_int(args: Vec<i64>) -> PyResult<i64> {
     if args.is_empty() {
         return Err(PyValueError::new_err(
@@ -265,9 +223,6 @@ fn gcd_with_int(args: Vec<i64>) -> PyResult<i64> {
 }
 
 #[pyfunction]
-/// Returns the greatest common divisor of the float numbers in the list.
-/// # Arguments 
-/// `args` - a list of floats 
 fn gcd_with_float(args: Vec<f64>) -> PyResult<i64> {
     if args.is_empty() {
         return Err(PyValueError::new_err(
@@ -279,14 +234,10 @@ fn gcd_with_float(args: Vec<f64>) -> PyResult<i64> {
     gcd_with_int(ints)
 }
 
-
 #[pyfunction]
-///  Returns the least common multiple (LCM) of the numbers in the list.
-/// # Arguments
-/// `args` - a list of numbers
 fn lcm_with(args: Vec<f64>) -> PyResult<f64> {
     if args.is_empty() {
-        return Err(PyValueError::new_err("lcm_with() requires at least one argument."))
+        return Ok(0.0);
     }
 
     let mut result = args[0].abs();
@@ -787,7 +738,6 @@ fn nadouf_math(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(power, m)?)?;
     m.add_function(wrap_pyfunction!(square_root, m)?)?;
     m.add_function(wrap_pyfunction!(cube_root, m)?)?;
-    m.add_function(wrap_pyfunction!(root, m)?)?;
     m.add_function(wrap_pyfunction!(factorial, m)?)?;
     m.add_function(wrap_pyfunction!(gcd_with_int, m)?)?;
     m.add_function(wrap_pyfunction!(gcd_with_float, m)?)?;
