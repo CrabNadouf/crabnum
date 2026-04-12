@@ -1,3 +1,17 @@
+// main library file 
+
+// checks if number is not finite
+fn check_isnt_finite(number: f64) -> PyResult<f64>{
+	if !number.is_finite() { Err(PyValueError::new_err("Number must be finite")) } else { Ok(number) }
+}
+
+
+// checks integer overflow of result
+fn check_is_integer_overflow(a: i64, b: i64) -> PyResult<()> {
+	if a == i64::MIN && b == -1 { Err(PyOverflowError::new_err("Integer overrflow: MIN / -1")) } else { Ok(()) }
+}
+
+
 use pyo3::exceptions::{PyValueError, PyZeroDivisionError, PyOverflowError};
 use pyo3::prelude::*;
 
@@ -9,10 +23,7 @@ use pyo3::prelude::*;
 pub fn sum_of(args: Vec<f64>) -> PyResult<f64> { 
     let result: f64 = args.iter().sum();
     
-    match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-        false => Ok(result)
-    }
+   	check_isnt_finite(result)
 }
 
 
@@ -26,11 +37,7 @@ pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
         [first, rest @..] => {
             let result = *first - rest.iter().sum::<f64>();
             
-            match !result.is_finite() { 
-                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-                false => Ok(result)
-            }
-            
+            check_isnt_finite(result)
         }
     }
 }
@@ -54,10 +61,7 @@ pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
             result /= i;
             }
             
-            match !result.is_finite() {
-                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-                false => Ok(result)
-            }
+            check_isnt_finite(result)
         }
     }
 }
@@ -72,25 +76,21 @@ pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
         [] => Ok(0),
         [first, rest@..] => {
             let mut result = *first;
-            
+
             for &i in rest {
                 if i == 0 {
-                    return Err(PyZeroDivisionError::new_err("Division by zero!"))
+                    return Err(PyZeroDivisionError::new_err("Division by zero!"));
                 }
-                
-                match result == i64::MIN && i == -1 {
-                    true => return Err(PyOverflowError::new_err("Integer overflow: MIN / -1")),
-                    false => {
-                        result /= i
-                    }
-                }          
-            }  
+
+                check_is_integer_overflow(result, i)?;
+                result /= i;
+            }
 
             Ok(result)
         }
     }
 }
-
+                
 
 #[pyfunction]
 /// Returns product of all numbers in the list.
@@ -106,10 +106,7 @@ pub fn mult_of(args: Vec<f64>) -> PyResult<f64> {
                 result *= i
             }
             
-            match !result.is_finite() {
-                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-                false => Ok(result)
-            }
+            check_isnt_finite(result)
         }
     }
 }
@@ -122,10 +119,7 @@ pub fn mult_of(args: Vec<f64>) -> PyResult<f64> {
 pub fn square(number: f64) -> PyResult<f64> {
     let result = number * number;
     
-    match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-        false => Ok(result)
-    }
+    check_isnt_finite(result)
 }
 
 
@@ -136,10 +130,7 @@ pub fn square(number: f64) -> PyResult<f64> {
 pub fn cube(number: f64) -> PyResult<f64> {
     let result = number.powi(3);
     
-    match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-        false => Ok(result)
-    }
+    check_isnt_finite(result)
 }
 
 
@@ -151,10 +142,7 @@ pub fn cube(number: f64) -> PyResult<f64> {
 pub fn power(number: f64, exponent: f64) -> PyResult<f64> {
     let result = number.powf(exponent);
     
-    match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-        false => Ok(result)
-    }
+    check_isnt_finite(result)
 }
 
 
@@ -168,10 +156,7 @@ fn square_root(number: f64) -> PyResult<f64> {
         false => {
             let result = number.powf(0.5);
             
-            match !result.is_finite() {
-                true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-                false => Ok(result)
-            }
+            check_isnt_finite(result)
         }
     }
 }
@@ -184,17 +169,14 @@ fn square_root(number: f64) -> PyResult<f64> {
 fn cube_root(number: f64) -> PyResult<f64> {
     let result = number.powf(1.0/3.0);
     
-    match !result.is_finite() {
-        true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-        false => Ok(result)
-    }
+    check_isnt_finite(result)
 }
 
 
 #[pyfunction]
 /// Returns the `power`-th root of `number`.
 /// # Arguments
-/// `number` - a  float number
+/// `number` - a float number
 /// `power` - a float number
 fn root(number: f64, power: f64) -> PyResult<f64> {
 	if power == 0.0 {
@@ -205,10 +187,7 @@ fn root(number: f64, power: f64) -> PyResult<f64> {
 	 	} else {
 	 		let result = number.powf(1.0/power);
 	 		
-	 		match !result.is_finite() {
-	 			true => Err(PyOverflowError::new_err("Result is infinite or NaN")),
-	 			false => Ok(result)
-		 	}
+	 		check_isnt_finite(result)
 		 }
 	}
  }
@@ -218,16 +197,16 @@ fn root(number: f64, power: f64) -> PyResult<f64> {
 /// Returns the factorial of `number`.
 /// # Arguments
 /// `number` - integer number
-fn factorial(number: i64) -> PyResult<i64> {
+fn factorial(number: i128) -> PyResult<i128> {
     match number < 0 {
         true => Err(PyValueError::new_err("The factorial of a negative number is not defined.")),
         false => {
-            let mut result: i64 = 1;
+            let mut result: i128 = 1;
             
             for i in 2..=number {
                 result = match result.checked_mul(i) {
                     Some(val) => val,
-                    None => return Err(PyValueError::new_err("Factorial overflow")),
+                    None => return Err(PyOverflowError::new_err("Factorial overflow")),
                 };
              }
             Ok(result)
@@ -263,6 +242,7 @@ fn gcd_with_int(args: Vec<i64>) -> PyResult<i64> {
 
     Ok(result)
 }
+
 
 #[pyfunction]
 /// Returns the greatest common divisor of the float numbers in the list.
@@ -302,115 +282,155 @@ fn lcm_with(args: Vec<f64>) -> PyResult<f64> {
         if gcd == 0 {
             return Ok(0.0);
         }
-
+ 
         result = (result * num_abs) / gcd as f64;
     }
 
-    Ok(result)
+    check_isnt_finite(result)
 }
 
-#[pyfunction]
-fn floor(number: f64) -> i64 {
-    number.floor() as i64
-}
 
 #[pyfunction]
-fn ceil(number: f64) -> i64 {
-    number.ceil() as i64
+/// Rounds `number` down.
+/// # Arguments
+/// `number` - a float number
+fn floor(number: f64) -> PyResult<i64> {
+    if !number.is_finite() {
+        return Err(PyValueError::new_err("Number must be finite."))
+    }
+
+    let rounded = number.floor();
+
+    if rounded > i64::MAX as f64 || rounded < i64::MIN as f64 {
+        return Err(PyOverflowError::new_err("Result exceeds i64 range"))
+    }
+    
+    Ok(rounded as i64)
 }
 
-#[pyfunction]
-fn is_positive(number: f64) -> bool {
-    if number > 0.0 { true } else { false }
-}
 
 #[pyfunction]
-fn is_negative(number: f64) -> bool {
-    if number < 0.0 { true } else { false }
+/// Rounds `number` up.
+/// # Arguments
+/// `number` - a float number
+fn ceil(number: f64) -> PyResult<i64> {
+    if !number.is_finite() {
+        return Err(PyValueError::new_err("Number must be finite."))
+    }
+
+    let rounded = number.ceil();
+
+    if rounded > i64::MAX as f64 || rounded < i64::MIN as f64 {
+        return Err(PyOverflowError::new_err("Result exceeds i64 range"))
+    }
+    
+    Ok(rounded as i64)
 }
 
-#[pyfunction]
-fn is_integer(number: f64) -> bool {
-    if number.fract() == 0.0 { true } else { false }
-}
 
 #[pyfunction]
-fn sign(number: f64) -> i32 {
+/// Returns `true` if `number` is a positive.
+/// # Arguments
+/// `number` - a float number
+fn is_positive(number: f64) -> PyResult<bool>    {
+    check_isnt_finite(number)?;
+    Ok(number > 0.0)
+}
+
+
+#[pyfunction]
+/// Returns `true` if `number` is a negative.
+/// # Arguments
+/// `number` - a float number
+fn is_negative(number: f64) -> PyResult<bool> {
+    if !number.is_finite() {
+        return Err(PyValueError::new_err("Number must be finite."))
+    }
+    
+    Ok(number < 0.0)
+}
+
+
+#[pyfunction]
+/// Returns `true` if `number` is an integer.
+/// # Arguments
+/// `number` - a float number
+fn is_integer(number: f64) -> PyResult<bool> {
+    check_isnt_finite(number)?;
+    Ok(number.fract() == 0.0)
+}
+
+
+#[pyfunction]
+/// # Returns the sign of `number`:
+/// `1`  if `number` > 0
+/// `-1` if `number` < 0
+/// `0` if number = 0
+/// # Arguments
+/// `number` - a float number
+fn sign(number: f64) -> PyResult<i16> {
+    check_isnt_finite(number)?;
+    
     if number > 0.0 {
-        1
+        Ok(1)
     } else if number < 0.0 {
-        -1
+        Ok(-1)
     } else {
-        0
+        Ok(0)
     }
 }
 
-#[pyfunction]
-fn is_even(number: i64) -> bool {
-    if number % 2 == 0 { true } else { false }
-}
 
 #[pyfunction]
-fn is_odd(number: i64) -> bool {
-    if number % 2 != 0 { true } else { false }
+/// Returns `true` if `number` is even.
+/// # Arguments
+/// `number` - a integer number
+fn is_even(number: i64) ->PyResult<bool> {
+   Ok(number % 2 == 0)
 }
 
-fn taylor_series(x: f64, terms: usize, is_sin: bool) -> f64 {
-    if terms == 0 {
-        return 0.0;
-    }
-
-    let mut result = if is_sin { x } else { 1.0 };
-    let mut term = result;
-    let x_sq = x * x;
-
-    for i in 1..terms {
-        let n = if is_sin { 2 * i + 1 } else { 2 * i };
-        term *= -x_sq / (n * (n - 1)) as f64;
-        result += term;
-
-        if term.abs() < 1e-16 {
-            break;
-        }
-    }
-    result
-}
-
-fn normalize_angle(x: f64) -> f64 {
-    let pi = std::f64::consts::PI;
-    let tau = 2.0 * pi;
-    x - tau * ((x + pi) / tau).floor()
-}
 
 #[pyfunction]
-#[pyo3(signature = (number, terms=20))]
-fn sin(number: f64, terms: usize) -> PyResult<f64> {
-    let x = normalize_angle(number);
-    Ok(taylor_series(x, terms, true))
+/// Returns `true` if `number` is odd.
+/// # Arguments
+/// `number`- a integer number
+fn is_odd(number: i64) -> PyResult<bool> {
+   Ok(number % 2 != 0)
 }
+
 
 #[pyfunction]
-#[pyo3(signature = (number, terms=20))]
-fn cos(number: f64, terms: usize) -> PyResult<f64> {
-    let x = normalize_angle(number);
-    Ok(taylor_series(x, terms, false))
+/// Returns the sine of `number` (in radians)
+/// # Arguments
+/// `number` - a float number
+fn sin(number: f64) -> PyResult<f64> {
+   if !number.is_finite() {
+	return Err(PyValueError::new_err("Number must be finite."));
+   }
+
+   Ok(number.sin())
 }
+
 
 #[pyfunction]
-#[pyo3(signature = (number, terms=20))]
-fn tan(number: f64, terms: usize) -> PyResult<f64> {
-    let x = normalize_angle(number);
-    let s = taylor_series(x, terms, true);
-    let c = taylor_series(x, terms, false);
-
-    if c.abs() < 1e-12 {
-        return Err(PyZeroDivisionError::new_err(
-            "Tangent is undefined: cosine is zero",
-        ));
-    }
-
-    Ok(s / c)
+/// Returns the cosine of `number` (in radians)
+/// # Arguments
+/// `number` - a float number
+fn cos(number: f64) -> PyResult<f64> {
+   check_isnt_finite(number)?;
+   Ok(number.cos())
 }
+
+	
+#[pyfunction]
+/// Returns the tangent of `number` (in radians)
+/// # Arguments
+/// `number` - a float number
+fn tan(number: f64) -> PyResult<f64> {
+   check_isnt_finite(number)?;
+   Ok(number.tan())
+}
+
 
 #[pyfunction]
 fn tetration(base: f64, height: i64) -> PyResult<f64> {
@@ -427,10 +447,12 @@ fn tetration(base: f64, height: i64) -> PyResult<f64> {
                     return Err(PyValueError::new_err("The result is too big (infinity)"));
                 }
             }
-            Ok(result)
+            check_isnt_finite(result)
         }
     }
 }
+
+
 // classes
 
 #[pyclass]
@@ -812,3 +834,4 @@ fn nadouf_math(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     Ok(())
 }
+ 
