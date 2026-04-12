@@ -244,50 +244,7 @@ fn gcd_with_int(args: Vec<i64>) -> PyResult<i64> {
 }
 
 
-#[pyfunction]
-/// Returns the greatest common divisor of the float numbers in the list.
-/// # Arguments 
-/// `args` - a list of floats 
-fn gcd_with_float(args: Vec<f64>) -> PyResult<i64> {
-    if args.is_empty() {
-        return Err(PyValueError::new_err(
-            "gcd_with_float() requires at least one argument",
-        ));
-    }
-
-    let ints: Vec<i64> = args.iter().map(|&x| x.round() as i64).collect();
-    gcd_with_int(ints)
-}
-
-
-#[pyfunction]
-///  Returns the least common multiple (LCM) of the numbers in the list.
-/// # Arguments
-/// `args` - a list of numbers
-fn lcm_with(args: Vec<f64>) -> PyResult<f64> {
-    if args.is_empty() {
-        return Err(PyValueError::new_err("lcm_with() requires at least one argument."))
-    }
-
-    let mut result = args[0].abs();
-
-    for &num in &args[1..] {
-        let num_abs = num.abs();
-
-        let gcd = match gcd_with_float(vec![result, num_abs]) {
-            Ok(val) => val,
-            Err(_) => return Err(PyValueError::new_err("Error calculating GCD")),
-        };
-
-        if gcd == 0 {
-            return Ok(0.0);
-        }
- 
-        result = (result * num_abs) / gcd as f64;
-    }
-
-    check_isnt_finite(result)
-}
+// i need to write new lcm function here
 
 
 #[pyfunction]
@@ -812,8 +769,7 @@ fn nadouf_math(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(root, m)?)?;
     m.add_function(wrap_pyfunction!(factorial, m)?)?;
     m.add_function(wrap_pyfunction!(gcd_with_int, m)?)?;
-    m.add_function(wrap_pyfunction!(gcd_with_float, m)?)?;
-    m.add_function(wrap_pyfunction!(lcm_with, m)?)?;
+   //  m.add_function(wrap_pyfunction!(lcm_with, m)?)?;
     m.add_function(wrap_pyfunction!(floor, m)?)?;
     m.add_function(wrap_pyfunction!(ceil, m)?)?;
     m.add_function(wrap_pyfunction!(is_positive, m)?)?;
