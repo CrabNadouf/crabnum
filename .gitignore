@@ -1,6 +1,6 @@
 /target/
 dist/
-/test.py 
+test.py 
 *.so
 *.pyd
 *.dylib
