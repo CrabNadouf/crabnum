@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "nadouf-math"
-version = "0.1.1"
+version = "0.1.2"
 description = "fast and safety python library"
 readme = "README.md"
 license = { text = "MIT" }
