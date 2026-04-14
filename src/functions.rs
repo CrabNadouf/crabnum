@@ -1,11 +1,10 @@
 // file with functions 
 
-
 use pyo3::exceptions::{PyValueError, PyZeroDivisionError, PyOverflowError};	
 use pyo3::prelude::*; 
+use pyo3::types::PyTuple;
 use num_bigint::BigInt; 
-use num_traits::{One, Zero};
-
+use num_traits::{One, Zero, Signed};
 
 // special functions
 
@@ -25,98 +24,107 @@ fn check_is_integer_overflow(a: i64, b: i64) -> PyResult<()> {
 
 
 #[pyfunction]
+#[pyo3(signature = (*args))]
 /// Returns the sum of the numbers in the list.
 /// # Arguments
 /// `args` - a list with float numbers
-pub fn sum_of(args: Vec<f64>) -> PyResult<f64> {
+pub fn sum_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
     if args.is_empty() {
 		return Err(PyValueError::new_err("sum_of() takes at least 1 value."))
-	} else {
-	let result: f64 = args.iter().sum();
+	} 
+		
+	let mut result: f64 = 0.0;
+	
+	for item in args.iter() {
+		let val: f64 = item.extract()?;
+		result += val;
+	}
 
     check_is_finite(result)
-	}
 }
 
 
 #[pyfunction]
+#[pyo3(signature = (*args))]
 /// Returns the difference between the first number and the sum of the other numbers in the list.
 /// # Arguments
 /// `args` - a list with float numbers
-pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
+pub fn dif_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 	if args.is_empty() {
 		return Err(PyValueError::new_err("dif_of() takes at least 1 value."))
-	} else {
-		let mut result = args[0];
+	} 
+	let mut result: f64 = args.get_item(0)?.extract()?;
 
-		for &i in &args[1..] {
-			result -= i
-		}
-
-		check_is_finite(result)
-	}
+	for i in 1..args.len() {
+        let val: f64 = args.get_item(i)?.extract()?;
+       	result -= val;
+    }
+	check_is_finite(result)
 }
 
 
 #[pyfunction]
+#[pyo3(signature = (*args))]
 /// Returns the result of consecutive division of the numbers in the list.
 /// # Arguments
 /// `args`  - a list with float numbers
-pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
+pub fn div_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 	if args.is_empty() {
 		return Err(PyValueError::new_err("div_of() takes at least 1 value"))
-	} else {
-		let mut result = args[0];
-
-		for &i in &args[1..]{
-			if i == 0.0 {
-				return Err(PyZeroDivisionError::new_err("Divivsion by zero."))
-			} 
-			
-			result /=i;
-		}
-	check_is_finite(result)
 	}
+	
+	let mut result: f64 = args.get_item(0)?.extract()?;
+
+	for i in 1..args.len() {
+		let val: f64 = args.get_item(i)?.extract()?;
+		result /= val;
+	}
+   
+	check_is_finite(result)
 }
 
 
 #[pyfunction]
+#[pyo3(signature = (*args))]
 /// Returns the result of consecutive integer division of the numbers in the list.
 /// # Arguments
 /// `args`- a list with integer numbers
-pub fn int_div_of(args: Vec<i64>) -> PyResult<i64>{
+pub fn int_div_of(args: &Bound<'_, PyTuple>) -> PyResult<i64>{
 	if args.is_empty() {
 		return Err(PyValueError::new_err("int_div_of() takes at least 1 value"))
 	}
 	
-	let mut result = args[0];
+	let mut result: i64 = args.get_item(0)?.extract()?;
 
-	for &i in &args[1..] {
-		if i == 0 {
+	for i in 1..args.len() {
+		let val: i64 = args.get_item(i)?.extract()?;
+		if val == 0 {
 			return Err(PyZeroDivisionError::new_err("Division by zero."))
 		}
 		
-		check_is_integer_overflow(result, i)?;
+		check_is_integer_overflow(result, val)?;
 
-		result /= i;
+		result /= val;
 	}
 	Ok(result)
 }
 
 
 #[pyfunction]
+#[pyo3(signature = (*args))]
 /// Returns the product between all numbers in a list.
 /// # Arguments
 /// `args` - a list with float numbers
-pub fn product(args: Vec<f64>) -> PyResult<f64> {
+pub fn product(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 	if args.is_empty() {
 		return Err(PyValueError::new_err("mult_of() takes at least 1 value."))
 	}
 
-	let mut result = args[0];
+	let mut result: f64 = args.get_item(0)?.extract()?;
 	
-	for &i in &args[1..] {
-		result *= i
+	for i in 1..args.len() {
+		let val: f64 = args.get_item(i)?.extract()?;
+		result *= val;
 	}
 
 	check_is_finite(result)
@@ -151,9 +159,7 @@ pub fn cube(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// `power` - a float number
 pub fn power(number: f64, power: f64) -> PyResult<f64> {
-	if power == 0.0 {
-		return Ok(1.0);
-	}
+	if power == 0.0 { return Ok(1.0); }
 
 	let result = number.powf(power);
 	
@@ -166,9 +172,7 @@ pub fn power(number: f64, power: f64) -> PyResult<f64> {
 /// # Arguments
 /// `number` - a float number
 pub fn square_root(number: f64) -> PyResult<f64> {
-	if number < 0.0 {
-		return Err(PyValueError::new_err("Number cant be negative."))
-	}
+	if number < 0.0 { return Err(PyValueError::new_err("Number cant be negative.")) }
 	
 	let result = number.powf(0.5);
 	
@@ -193,9 +197,7 @@ pub fn cube_root(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// `power` - a float number
 pub fn root(number: f64, power: f64) -> PyResult<f64> {
-	if power < 0.0 {
-		return Err(PyValueError::new_err("Power cant be negative."))
-	}
+	if power < 0.0 { return Err(PyValueError::new_err("Power cant be negative.")) }
 
 	let total_power = 1.0/power;
 	let result = number.powf(total_power);
@@ -209,9 +211,7 @@ pub fn root(number: f64, power: f64) -> PyResult<f64> {
 /// # Arguments
 /// `number` - an integer number
 pub fn factorial(number: BigInt) -> PyResult<BigInt> {  // i created the bigint type so that there would be no limitations in calculating the factorial
-	if number < BigInt::zero() {
-		return Err(PyValueError::new_err("Number cant be negattive."))
-	}
+	if number < BigInt::zero() { return Err(PyValueError::new_err("Number cant be negattive.")) }
 	
 	let mut result = BigInt::one();
 	let mut current = BigInt::one();
@@ -225,108 +225,164 @@ pub fn factorial(number: BigInt) -> PyResult<BigInt> {  // i created the bigint 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// auxiliary function
+pub fn _gcd_rust(mut a: BigInt, mut b: BigInt) -> BigInt {
+    let mut a = a.abs();
+    let mut b = b.abs();
+    while !b.is_zero() {
+        let r = &a % &b;
+        a = std::mem::replace(&mut b, r);
+    }
+    a
+}
+
+
+#[pyfunction]
+/// Returns the GCD of `args` in the list.
+/// # Arguments
+/// `args` - integer numbers
+#[pyo3(signature = (*args))]
+pub fn gcd(args: &Bound<'_, PyTuple>) -> PyResult<BigInt> {
+    if args.is_empty() { return Ok(BigInt::zero()); }
+    
+    let mut res: BigInt = args.get_item(0)?.extract()?;
+    for i in 1..args.len() {
+        let next_val: BigInt = args.get_item(i)?.extract()?;
+        res = _gcd_rust(res, next_val);
+    }
+    Ok(res)
+}
+
+
+#[pyfunction]
+/// Returns the LCM of `args`.
+/// # Arguments
+/// `args` - integer numbers
+#[pyo3(signature = (*args))]
+pub fn lcm(args: &Bound<'_, PyTuple>) -> PyResult<BigInt> {
+    if args.is_empty() { return Ok(BigInt::zero()); }
+
+    let mut res: BigInt = args.get_item(0)?.extract()?;
+    
+    if res.is_zero() { return Ok(BigInt::zero()) }
+
+    for i in 1..args.len() {
+        let next_val: BigInt = args.get_item(i)?.extract()?;
+        
+        if next_val.is_zero() { return Ok(BigInt::zero()) }
+
+        let g = _gcd_rust(res.clone(), next_val.clone());
+        res = (res.abs() / g) * next_val.abs();
+    }
+
+    Ok(res)
+}
+
+
+#[pyfunction]
+/// Returns `number` rounded down.
+/// # Arguments
+/// `number` - a float number
+pub fn floor(mut number: f64) -> PyResult<i64> {
+	number = number.floor();
+	check_is_finite(number)?;
+	Ok(number as i64)
+}
+
+
+#[pyfunction]
+/// Returns `number` rounded up.
+/// # Arguments
+/// `number` - a float number
+pub fn ceil(mut number: f64) -> PyResult<i64> {
+	check_is_finite(number)?;
+	number = number.ceil();
+	Ok(number as i64)
+}
+
+
+#[pyfunction]
+/// Returns `true` if `number` is positive.
+/// # Arguments
+/// `number` - a float number
+pub fn is_positive(number: f64) -> PyResult<bool> {
+	check_is_finite(number)?;
+	Ok(number > 0.0)
+}
+
+
+#[pyfunction]
+/// Returns `true` if `number` is negative.
+/// # Arguments
+/// `number` - a float number
+pub fn is_negative(number:f64) -> PyResult<bool> {
+	check_is_finite(number)?;
+	Ok(number < 0.0)
+}
+
+
+#[pyfunction]
+/// Returns `-1` if `number` is negative, `0` if `number` is zero and `1` if `number` is positive.
+/// # Arguments
+/// `number` - a float number
+pub fn sign(number: f64) -> PyResult<i8> {
+	check_is_finite(number)?;
+	if number > 0.0 {
+		Ok(1)
+	} else if number < 0.0 {
+		Ok(-1)
+	} else {
+		Ok(0)
+	}
+}
+
+
+#[pyfunction]
+/// Returns `true` if `number` is integer.
+/// # Arguments
+/// `number` - a floatt number
+pub fn is_integer(number: f64) -> PyResult<bool> {
+	if number.fract() == 0.0 { Ok(true)} else { Ok(false) }
+}
+
+
+#[pyfunction]
+/// Returns `true` if `number` is even.
+/// # Arguments
+/// `number` - an integer number
+pub fn is_even(number: i64) -> PyResult<bool> {
+	if number % 2 == 0 { Ok(true) } else { Ok(false) }
+}
+
+
+#[pyfunction]
+/// Returns `true` if number is odd.
+/// # Arguments
+/// `number` - a float number
+pub fn is_odd(number: i64) -> PyResult<bool> {
+	if is_even(number) == false {
+		Ok(true)
+	} else {
+		Ok(false)
+	}
+}
+
+
+#[pyfunction]
+/// Returns the sine of `number` (in radians).
+/// # Arguments
+/// `number` - a float number
+pub fn sin(number: f64) -> PyResult<f64> {
+	check_is_finite(number)?;
+	Ok(number.sin())
+}
+
+
+#[pyfunction]
+/// Returns cosine of `number` (in radians).
+/// # Arguments
+/// `number` - a float number
+pub fn cos(number: f64) -> PyResult<f64> {
+	check_is_finite(number)?;
+	Ok(number.cos())
+}
