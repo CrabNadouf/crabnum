@@ -15,6 +15,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
+name = "crabnum"
+version = "0.1.1"
+dependencies = [
+ "num-bigint",
+ "num-traits",
+ "pyo3",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -42,15 +51,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "488016bfae457b036d996092f6cb448677611ce4449e970ceaf42695203f218a"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "nadouf-math"
-version = "0.1.2"
-dependencies = [
- "num-bigint",
- "num-traits",
- "pyo3",
 ]
 
 [[package]]
