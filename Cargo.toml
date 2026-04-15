@@ -1,15 +1,15 @@
 [package]
-name = "nadouf-math"
-version = "0.1.2"
+name = "crabnum"
+version = "0.1.1"
 edition = "2024"
 authors = ["Nadouvvv <nadoufmail@gmail.com>"]
 description = "fast and safety python library"
 license = "MIT"
-repository = "https://github.com/CrabNadouf/Nadouf_Math_Library"
+repository = "https://github.com/CrabNadouf/crabnum"
 readme = "README.md"
 
 [lib]
-name = "nadouf_math"
+name = "crabnum"
 crate-type = ["cdylib"]
 
 [dependencies]
