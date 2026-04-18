@@ -1,5 +1,5 @@
 use num_bigint::BigInt;
-use num_traits::{One, Signed, Zero};
+use num_traits::{One, Signed, Zero, ToPrimitive, FromPrimitive};
 use pyo3::exceptions::{PyOverflowError, PyValueError, PyZeroDivisionError};
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
@@ -7,7 +7,7 @@ use pyo3::types::PyTuple;
 // special functions
 
 // checks if number is finite
-fn check_is_finite(number: f64) -> PyResult<f64> {
+pub(crate) fn check_is_finite(number: f64) -> PyResult<f64> {
     if number.is_finite() {
         Ok(number)
     } else {
@@ -16,7 +16,7 @@ fn check_is_finite(number: f64) -> PyResult<f64> {
 }
 
 // checks integer overflow of result
-fn check_is_integer_overflow(a: i64, b: i64) -> PyResult<()> {
+pub(crate) fn check_is_integer_overflow(a: i64, b: i64) -> PyResult<()> {
     if a == i64::MIN && b == -1 {
         Err(PyOverflowError::new_err("Integer overrflow: MIN / -1"))
     } else {
@@ -25,7 +25,7 @@ fn check_is_integer_overflow(a: i64, b: i64) -> PyResult<()> {
 }
 
 
-fn empty<'py>(args: &'py Bound<'py, PyTuple>) -> PyResult<&'py Bound<'py, PyTuple>> {
+pub(crate) fn empty<'py>(args: &'py Bound<'py, PyTuple>) -> PyResult<&'py Bound<'py, PyTuple>> {
     if args.is_empty() { return Err(PyValueError::new_err( "Function takes at least one argument.")) } else { Ok(args) }
 }
 
@@ -392,3 +392,60 @@ pub fn tan(number: f64) -> PyResult<f64> {
     check_is_finite(number)?;
     Ok(number.tan())
 }
+
+
+pub(crate) fn pow_bigint(base: &BigInt, exponent: &BigInt) -> BigInt {
+    if exponent.is_zero() {
+        return BigInt::one();
+    }
+    if exponent.is_one() {
+        return base.clone();
+    }
+
+    if let Some(exp_u32) = exponent.to_u32() {
+        return base.pow(exp_u32);
+    }
+
+    let mut result = BigInt::one();
+    let mut base_power = base.clone();
+    let mut exp = exponent.clone();
+    
+    while !exp.is_zero() {
+        if (&exp & &BigInt::one()).is_one() {
+            result *= &base_power;
+        }
+        base_power = &base_power * &base_power;
+        exp >>= 1;
+    }
+    result
+}
+
+
+#[pyfunction]
+/// Returns the result of tetration of `base` to height `n`.
+/// # Arguments
+/// `a` - a positive integer (base)
+/// `n` - a non-negative integer (the height)
+fn tetration(a: i64, n: u32) -> PyResult<BigInt> {
+    if a <= 0 {
+        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
+            "The base must be positive integer."
+        ));
+    }
+
+    let base = BigInt::from_i64(a).unwrap();
+    
+    match n {
+        0 => Ok(BigInt::one()),
+        1 => Ok(base),
+        _ => {
+            let mut result = base.clone();
+            for _ in 1..n {
+                result = pow_bigint(&base, &result);
+            }
+            Ok(result)
+        }
+    }
+}
+
+
