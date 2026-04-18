@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 mod functions;
 
 #[pymodule]
-fn math_libm(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(functions::sum_of, m)?)?;
     m.add_function(wrap_pyfunction!(functions::dif_of, m)?)?;
     m.add_function(wrap_pyfunction!(functions::div_of, m)?)?;
