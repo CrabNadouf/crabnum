@@ -1,3 +1,5 @@
+#![allow(unsafe_op_in_unsafe_fn)]
+
 use num_bigint::BigInt;
 use num_traits::{One, Signed, Zero, ToPrimitive, FromPrimitive};
 use pyo3::exceptions::{PyOverflowError, PyValueError, PyZeroDivisionError};
@@ -33,9 +35,18 @@ pub(crate) fn empty<'py>(args: &'py Bound<'py, PyTuple>) -> PyResult<&'py Bound<
 
 #[pyfunction]
 #[pyo3(signature = (*args))]
-/// Returns the sum of the numbers in the list.
-/// # Arguments
-/// `args` - a list with float numbers
+/// Returns the sum of the numbers in the tuple.
+/// ## Arguments
+/// `args` - float numbers
+/// ## Examples
+/// ```python
+/// print(sum_of(5, 2))
+/// # It will print 7 (5 + 2 = 7) 
+/// ``` 
+/// ```python
+/// print(sum_of(1001 - 1, 5))
+/// # It will print 1005 (1000 - 1 + 5 = 1005)
+/// ```
 pub fn sum_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
     empty(args)?;
     let mut result: f64 = 0.0;
@@ -53,7 +64,7 @@ pub fn sum_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 #[pyo3(signature = (*args))]
 /// Returns the difference between the first number and the sum of the other numbers in the list.
 /// # Arguments
-/// `args` - a list with float numbers
+/// `args` - float numbers
 pub fn dif_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
     empty(args)?;
     let mut result: f64 = args.get_item(0)?.extract()?;
@@ -70,7 +81,7 @@ pub fn dif_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 #[pyo3(signature = (*args))]
 /// Returns the result of consecutive division of the numbers in the list.
 /// # Arguments
-/// `args`  - a list with float numbers
+/// `args`  - float numbers
 pub fn div_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
     empty(args)?;
     let mut result: f64 = args.get_item(0)?.extract()?;
@@ -88,7 +99,7 @@ pub fn div_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 #[pyo3(signature = (*args))]
 /// Returns the result of consecutive integer division of the numbers in the list.
 /// # Arguments
-/// `args`- a list with integer numbers
+/// `args`- integer numbers
 pub fn int_div_of(args: &Bound<'_, PyTuple>) -> PyResult<i64> {
     empty(args)?;
     let mut result: i64 = args.get_item(0)?.extract()?;
@@ -111,7 +122,7 @@ pub fn int_div_of(args: &Bound<'_, PyTuple>) -> PyResult<i64> {
 #[pyo3(signature = (*args))]
 /// Returns the product between all numbers in a list.
 /// # Arguments
-/// `args` - a list with float numbers
+/// `args` - float numbers
 pub fn product(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
     empty(args)?;
     let mut result: f64 = args.get_item(0)?.extract()?;
@@ -150,14 +161,14 @@ pub fn cube(number: f64) -> PyResult<f64> {
 #[pyfunction]
 /// Returns a `number` raised to a `power`.
 /// # Arguments
-/// `number` - a float number
-/// `power` - a float number
-pub fn power(number: f64, power: f64) -> PyResult<f64> {
-    if power == 0.0 {
+/// `number` - a float number<br>
+/// `exp` - a float number
+pub fn power(number: f64, exp: f64) -> PyResult<f64> {
+    if exp == 0.0 {
         return Ok(1.0);
     }
 
-    let result = number.powf(power);
+    let result = number.powf(exp);
 
     check_is_finite(result)
 }
@@ -192,7 +203,7 @@ pub fn cube_root(number: f64) -> PyResult<f64> {
 #[pyfunction]
 /// Returns the `power`-th root of `number`.
 /// # Arguments
-/// `number` - a float number
+/// `number` - a float number<br>
 /// `power` - a float number
 pub fn root(number: f64, power: f64) -> PyResult<f64> {
     if power < 0.0 {
@@ -229,7 +240,7 @@ pub fn factorial(number: BigInt) -> PyResult<BigInt> {
 
 
 // auxiliary function
-pub fn gcd_rust(mut a: BigInt, mut b: BigInt) -> BigInt {
+pub fn gcd_rust(a: BigInt, b: BigInt) -> BigInt {
     let mut a = a.abs();
     let mut b = b.abs();
     while !b.is_zero() {
@@ -322,7 +333,10 @@ pub fn is_negative(number: f64) -> PyResult<bool> {
 }
 
 #[pyfunction]
-/// Returns `-1` if `number` is negative, `0` if `number` is zero and `1` if `number` is positive.
+/// # Returns <br>
+/// `-1` if `number` is negative,<br>
+/// `0` if `number` is zero, <br>
+/// `1` if `number` is positive.
 /// # Arguments
 /// `number` - a float number
 pub fn sign(number: f64) -> PyResult<i8> {
@@ -339,15 +353,17 @@ pub fn sign(number: f64) -> PyResult<i8> {
 #[pyfunction]
 /// Returns `true` if `number` is integer.
 /// # Arguments
-/// `number` - a floatt number
+/// `number` - a float number
 pub fn is_integer(number: f64) -> PyResult<bool> {
     check_is_finite(number)?;
-    Ok(number.fract() == 0)
+    Ok(number.fract() == 0.0)
 }
 
 
 #[pyfunction]
-/// Returns `true` if `number` is even.
+/// # Returns 
+/// `true` if `number` is even, <br>
+/// `false` if number isn't even.
 /// # Arguments
 /// `number` - an integer number
 pub fn is_even(number: i64) -> PyResult<bool> {
@@ -426,7 +442,7 @@ pub(crate) fn pow_bigint(base: &BigInt, exponent: &BigInt) -> BigInt {
 /// # Arguments
 /// `a` - a positive integer (base)
 /// `n` - a non-negative integer (the height)
-fn tetration(a: i64, n: u32) -> PyResult<BigInt> {
+pub fn tetration(a: i64, n: u32) -> PyResult<BigInt> {
     if a <= 0 {
         return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
             "The base must be positive integer."

@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 
 mod functions;
+mod class;
 
 #[pymodule]
 fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
