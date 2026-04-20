@@ -31,5 +31,6 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(functions::cos, m)?)?;
     m.add_function(wrap_pyfunction!(functions::tan, m)?)?;
     m.add_function(wrap_pyfunction!(functions::tetration, m)?)?;
+    m.add_class::<class::Crabnum>()?;
     Ok(())
 }

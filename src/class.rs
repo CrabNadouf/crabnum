@@ -9,10 +9,10 @@ use pyo3::prelude::*;
 use pyo3::types::PyTuple;
 use pyo3::exceptions::{PyZeroDivisionError, PyValueError};
 use num_bigint::BigInt;
-use num_traits::ToPrimitive;
+use num_traits::{Zero, ToPrimitive, FromPrimitive};
 
 #[pyclass]
-struct Crabnum {
+pub struct Crabnum {
     number: f64,
 }
 
@@ -21,6 +21,14 @@ impl Crabnum {
     #[new]
     pub fn new(number: f64) -> Self {
         Self { number }
+    }
+
+    fn __str__(&self) -> PyResult<String> {
+        Ok(self.number.to_string())
+    }
+    
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("Crabnum({})", self.number))
     }
 
     #[pyo3(signature = (*args))]
@@ -87,5 +95,38 @@ impl Crabnum {
         let res_bigint = factorial(number)?;
         let result = res_bigint.to_f64().ok_or_else(|| {PyValueError::new_err("Result is too large to fit in f64")})?;
         Ok(Self { number: result })
+    }
+
+    #[pyo3(signature = (*args))]
+    pub fn gcd(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
+        let n = self.number.round() as i64; 
+        let self_bigint = BigInt::from(n);/*- */
+        let args_gcd = gcd(args)?;
+        let result_bigint = gcd_rust(self_bigint, args_gcd);
+        let result = result_bigint.to_f64().ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
+        Ok(Self { number: result })
+    }
+
+    #[pyo3(signature = (*args))]
+    pub fn lcm(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
+        let n = self.number.round().abs() as u64;
+        let mut result = BigInt::from(n);
+        if result.is_zero() {
+            return Ok(Self { number: 0.0 });
+        }
+        
+        for i in 0..args.len() {
+            let val: f64 = args.get_item(i)?.extract()?;
+            let next_val = BigInt::from(val.round().abs() as u64);  
+            if next_val.is_zero() {
+                return Ok(Self { number: 0.0 });
+            }
+            let g = gcd_rust(result.clone(), next_val.clone());
+            result = (result * next_val) / g;
+        }
+        let number = result.to_f64()
+            .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
+        
+        Ok(Self { number })
     }
 }
