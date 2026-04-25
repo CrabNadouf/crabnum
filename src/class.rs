@@ -129,4 +129,48 @@ impl Crabnum {
         
         Ok(Self { number })
     }
+
+    pub fn floor(&self) -> PyResult<Self> {
+        Ok( Self { number: self.number.floor() })
+    }
+
+    pub fn ceil(&self) -> PyResult<Self> {
+        Ok( Self { number: self.number.ceil()})
+    }
+
+    pub fn is_positive(&self) -> PyResult<bool> {
+        Ok( is_positive(self.number)? )
+    }
+
+    pub fn is_negative(&self) -> PyResult<bool> {
+        Ok( is_negative(self.number)? )
+    }
+
+    pub fn sign(&self) -> PyResult<i8> {
+        Ok( sign(self.number)? )
+    }
+
+    pub fn is_integer(&self) -> PyResult<bool> {
+        Ok( is_integer(self.number)? )
+    }
+
+    pub fn is_even(&self) -> PyResult<bool> {
+        let permission = is_integer(self.number)?;
+        match permission {
+            true => {
+                Ok( is_even(self.number as i64)? )
+            },
+            false => Err(PyValueError::new_err("Number must be integer."))
+        }
+    }
+
+    pub fn is_odd(&self) -> PyResult<bool> {
+        let permission = is_integer(self.number)?;
+        match permission {
+            true => {
+                Ok( is_odd(self.number as i64)? )
+            },
+            false => Err(PyValueError::new_err("Number must be integer."))
+        }
+    }
 }
