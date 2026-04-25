@@ -34,13 +34,13 @@ impl Crabnum {
     #[pyo3(signature = (*args))]
     pub fn sum_of(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
         let result: f64 = sum_of(args)?;
-        Ok(Self { number: self.number + result })
+        Ok( Self { number: self.number + result })
     }
 
     #[pyo3(signature = (*args))]
     pub fn dif_of(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
         let result: f64 = sum_of(args)?;
-        Ok(Self { number: self.number - result})
+        Ok( Self { number: self.number - result})
     }
 
     #[pyo3(signature = (*args))]
@@ -49,7 +49,7 @@ impl Crabnum {
         if result == 0.0 {
             return Err(PyZeroDivisionError::new_err("Can't divide by zero!"))
         }
-        Ok(Self { number: self.number / result})
+        Ok( Self { number: self.number / result})
     }
 
     #[pyo3(signature = (*args))]
@@ -57,36 +57,36 @@ impl Crabnum {
         let result_1: f64 = product(args)?;
         let selfnumber = self.number as i64;
         let number = result_1 as i64;
-        Ok(Self { number: (selfnumber / number) as f64})
+        Ok( Self { number: (selfnumber / number) as f64})
     }
 
     #[pyo3(signature = (*args))]
     pub fn product(&self, args: &Bound<'_,  PyTuple>) -> PyResult<Self> {
-        Ok(Self { number: self.number * product(args)?})
+        Ok( Self { number: self.number * product(args)?})
     }
 
     pub fn square(&self) -> PyResult<Self> {
-        Ok(Self { number: square(self.number)?})
+        Ok( Self { number: square(self.number)?})
     }
 
     pub fn cube(&self) -> PyResult<Self> {
-        Ok(Self { number: cube(self.number)?})
+        Ok( Self { number: cube(self.number)?})
     }
 
     pub fn power(&self, exp: f64) -> PyResult<Self> {
-        Ok(Self { number: power(self.number, exp)?})
+        Ok( Self { number: power(self.number, exp)?})
     }
 
     pub fn square_root(&self) -> PyResult<Self> {
-        Ok(Self { number: square_root(self.number)?})
+        Ok( Self { number: square_root(self.number)?})
     }
 
     pub fn cube_root(&self) -> PyResult<Self> {
-        Ok(Self { number: cube_root(self.number)?})
+        Ok( Self { number: cube_root(self.number)?})
     }
 
     pub fn root(&self, power: f64) -> PyResult<Self> {
-        Ok(Self { number: root(self.number, power)?})
+        Ok( Self { number: root(self.number, power)?})
     }
 
     pub fn factorial(&self) -> PyResult<Self> {
@@ -94,7 +94,7 @@ impl Crabnum {
         let number = BigInt::from(n);
         let res_bigint = factorial(number)?;
         let result = res_bigint.to_f64().ok_or_else(|| {PyValueError::new_err("Result is too large to fit in f64")})?;
-        Ok(Self { number: result })
+        Ok( Self { number: result })
     }
 
     #[pyo3(signature = (*args))]
@@ -104,7 +104,7 @@ impl Crabnum {
         let args_gcd = gcd(args)?;
         let result_bigint = gcd_rust(self_bigint, args_gcd);
         let result = result_bigint.to_f64().ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
-        Ok(Self { number: result })
+        Ok( Self { number: result })
     }
 
     #[pyo3(signature = (*args))]
@@ -127,7 +127,7 @@ impl Crabnum {
         let number = result.to_f64()
             .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
         
-        Ok(Self { number })
+        Ok( Self { number })
     }
 
     pub fn floor(&self) -> PyResult<Self> {
@@ -173,4 +173,30 @@ impl Crabnum {
             false => Err(PyValueError::new_err("Number must be integer."))
         }
     }
+
+    pub fn sin(&self) -> PyResult<Self> {
+        Ok( Self { number: sin(self.number)? })
+    }
+
+    pub fn csc(&self) -> PyResult<Self> {
+        Ok( Self { number: csc(self.number)? })
+    }
+
+    pub fn cos(&self) -> PyResult<Self> {
+        Ok( Self { number: cos(self.number)? })
+    }
+
+    pub fn sec(&self) -> PyResult<Self> {
+        Ok( Self { number: sec(self.number)? })
+    }
+
+    pub fn tan(&self) -> PyResult<Self> {
+        Ok( Self { number: tan(self.number)? })
+    }
+
+    pub fn cot(&self) -> PyResult<Self> {
+        Ok( Self { number: cot(self.number)? } )
+    }
+
+
 }
