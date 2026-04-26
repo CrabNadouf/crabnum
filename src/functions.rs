@@ -1,8 +1,9 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use num_bigint::BigInt;
+use num_bigint::{BigInt, BigUint};
 use num_traits::{One, Signed, Zero, ToPrimitive, FromPrimitive};
 use pyo3::exceptions::{PyOverflowError, PyValueError, PyZeroDivisionError};
+use std::mem::replace;
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
 
@@ -488,6 +489,53 @@ pub(crate) fn pow_bigint(base: &BigInt, exponent: &BigInt) -> BigInt {
         exp >>= 1;
     }
     result
+}
+
+
+#[pyfunction]
+/// Returns the list with Fibonacci sequence for a given `range`.
+/// ### Arguments
+/// `range` - an integer i64 number
+/// ### Examples
+/// ```python
+/// print(fibonacci(10)) # it will print [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+/// ```
+/// ```python
+/// print(fibonacci(4)) # it will print [0, 1, 1, 2]
+/// ```
+/// ### Warning!
+/// The specified range must not exceed 91!
+pub fn fibonacci(n: usize) -> PyResult<BigUint> {
+    let mut f0: BigUint = Zero::zero();
+    let mut f1: BigUint = One::one();
+
+    for _ in 0..n {
+        let f2 = f0 + &f1;
+        f0 = replace(&mut f1, f2);
+    }
+
+    Ok(f0)
+}
+
+
+#[pyfunction]
+/// Returns the absolute value of `number`.
+/// ### Arguments
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(absolute(-3)) # it will print 3
+/// ```
+/// ```python
+/// print(absolute(3)) # it will print 3.0
+/// ```
+pub fn absolute(number: f64) -> PyResult<f64> {
+    check_is_finite(number)?;
+    if number > 0.0 {
+        Ok(number)
+    } else {
+        Ok(-number)
+    }
 }
 
 

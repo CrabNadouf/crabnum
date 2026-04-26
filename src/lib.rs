@@ -28,11 +28,13 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(functions::is_even, m)?)?;
     m.add_function(wrap_pyfunction!(functions::is_odd, m)?)?;
     m.add_function(wrap_pyfunction!(functions::sin, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::csc, m)?);
+    m.add_function(wrap_pyfunction!(functions::csc, m)?)?;
     m.add_function(wrap_pyfunction!(functions::sec, m)?)?;
     m.add_function(wrap_pyfunction!(functions::cos, m)?)?;
     m.add_function(wrap_pyfunction!(functions::tan, m)?)?;
     m.add_function(wrap_pyfunction!(functions::cot, m)?)?;
+    m.add_function(wrap_pyfunction!(functions::fibonacci, m)?)?;
+    m.add_function(wrap_pyfunction!(functions::absolute, m)?)?;
     m.add_function(wrap_pyfunction!(functions::tetration, m)?)?;
     m.add_class::<class::Crabnum>()?;
     Ok(())

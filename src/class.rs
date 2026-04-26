@@ -8,7 +8,7 @@ use crate::functions::*;
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
 use pyo3::exceptions::{PyZeroDivisionError, PyValueError};
-use num_bigint::BigInt;
+use num_bigint::{BigInt, BigUint};
 use num_traits::{Zero, ToPrimitive, FromPrimitive};
 
 #[pyclass]
@@ -198,5 +198,12 @@ impl Crabnum {
         Ok( Self { number: cot(self.number)? } )
     }
 
+    pub fn fibonacci(&self) -> PyResult<BigUint> {
+        let res = fibonacci(self.number as usize);
+        Ok(res?)
+    }
 
+    pub fn absolute(&self) -> PyResult<Self> {
+        Ok( Self { number: absolute(self.number)? })
+    }
 }
