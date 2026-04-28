@@ -11,129 +11,121 @@ use pyo3::types::PyTuple;
 
 // checks if number is finite
 pub(crate) fn check_is_finite(number: f64) -> PyResult<f64> {
-    if number.is_finite() {
-        Ok(number)
-    } else {
-        Err(PyValueError::new_err("Number must be finite"))
-    }
+    if number.is_finite() { Ok(number) } else { Err(PyValueError::new_err("Number must be finite")) }
 }
 
-// checks integer overflow of result
-pub(crate) fn check_is_integer_overflow(a: i64, b: i64) -> PyResult<()> {
-    if a == i64::MIN && b == -1 {
-        Err(PyOverflowError::new_err("Integer overrflow: MIN / -1"))
-    } else {
-        Ok(())
-    }
-}
-
-
-pub(crate) fn empty<'py>(args: &'py Bound<'py, PyTuple>) -> PyResult<&'py Bound<'py, PyTuple>> {
-    if args.is_empty() { return Err(PyValueError::new_err( "Function takes at least one argument.")) } else { Ok(args) }
+pub(crate) fn empty<T>(args: &[T]) -> PyResult<&[T]> {
+   if args.is_empty() { return Err(PyValueError::new_err( "Function takes at least one argument.")) } else { Ok(args) }
 }
 
 // python functions
 
 #[pyfunction]
-#[pyo3(signature = (*args))]
-/// Returns the sum of the numbers in the tuple.
+/// Returns the sum of the numbers in the list.
 /// ## Arguments
-/// `args` - float numbers
+/// `args` - the list with float numbers
 /// ## Examples
 /// ```python
-/// print(sum_of(5, 2))
+/// print(sum_of([5, 2)])
 /// # It will print 7 (5 + 2 = 7) 
 /// ``` 
 /// ```python
-/// print(sum_of(1001 - 1, 5))
+/// print(sum_of([1001 - 1, 5]))
 /// # It will print 1005 (1000 - 1 + 5 = 1005)
 /// ```
-pub fn sum_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
-    empty(args)?;
-    let mut result: f64 = 0.0;
-
-    for item in args.iter() {
-        let val: f64 = item.extract()?;
-        result += val;
-    }
-
-    check_is_finite(result)
+pub fn sum_of(args: Vec<f64>) -> PyResult<f64> {
+    empty(&args)?;
+    check_is_finite(args.iter().sum())
 }
 
 
 #[pyfunction]
-#[pyo3(signature = (*args))]
 /// Returns the difference between the first number and the sum of the other numbers in the list.
-/// # Arguments
-/// `args` - float numbers
-pub fn dif_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
-    empty(args)?;
-    let mut result: f64 = args.get_item(0)?.extract()?;
-
-    for i in 1..args.len() {
-        let val: f64 = args.get_item(i)?.extract()?;
-        result -= val;
-    }
-    check_is_finite(result)
+/// ### Arguments
+/// `args` - list with float numbers
+/// ### Examples
+/// ```python
+/// print(dif_of([1, 2, 3])) # it will print -4.0 (1 - (2 + 3) = -4)
+/// ```
+/// ```python
+/// print(dif_of([100, 24, 3])) # it will print 73.0 (100 - (24 + 3) = 73)
+/// ```
+pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
+    empty(&args)?;
+    check_is_finite(args[0] - args[1..].iter().sum::<f64>())
 }
 
-
 #[pyfunction]
-#[pyo3(signature = (*args))]
 /// Returns the result of consecutive division of the numbers in the list.
-/// # Arguments
-/// `args`  - float numbers
-pub fn div_of(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
-    empty(args)?;
-    let mut result: f64 = args.get_item(0)?.extract()?;
-
-    for i in 1..args.len() {
-        let val: f64 = args.get_item(i)?.extract()?;
-        result /= val;
-    }
-
-    check_is_finite(result)
+/// ### Arguments
+/// `args` - a list with float numbers
+/// ### Examples
+/// ```python
+/// # 1
+/// print(div_of([100, 25, 5])) # it will print 0.8
+/// ```
+/// ```python
+/// # 2
+/// print(div_of([993093, 33434, 4])) # it will print 7.425771669557935
+/// ```
+pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
+    empty(&args)?;
+    if args[1..].iter().any(|&x| x == 0.0) { return Err(PyValueError::new_err("Integer division by zero!")) }
+    check_is_finite(args[1..].iter().fold(args[0], |acc, &x| acc / x))
 }
 
-
 #[pyfunction]
-#[pyo3(signature = (*args))]
 /// Returns the result of consecutive integer division of the numbers in the list.
-/// # Arguments
-/// `args`- integer numbers
-pub fn int_div_of(args: &Bound<'_, PyTuple>) -> PyResult<i64> {
-    empty(args)?;
-    let mut result: i64 = args.get_item(0)?.extract()?;
-
-    for i in 1..args.len() {
-        let val: i64 = args.get_item(i)?.extract()?;
-        if val == 0 {
-            return Err(PyZeroDivisionError::new_err("Division by zero."));
-        }
-
-        check_is_integer_overflow(result, val)?;
-
-        result /= val;
-    }
-    Ok(result)
+/// ### Arguments
+/// `args`- the list with integer numbers
+/// ### Examples
+/// ```python
+/// # 1
+/// print(int_div_of([993093, 33434, 4])) # it will print 7
+/// ```
+/// ```python
+/// # 2
+/// print(int_div_of([10, 3, 1])) # it will print 3
+/// ```
+pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
+    empty(&args)?;
+    if args[1..].iter().any(|&x| x == 0) { return Err(PyValueError::new_err("Integer division by zero!")) }
+    Ok(args[1..].iter().fold(args[0], |acc, &x| acc / x))
 }
 
 
 #[pyfunction]
-#[pyo3(signature = (*args))]
+/// Returns the remainder of division `a` / `b`.
+/// ### Arguments
+/// `a` - a float number
+/// `b` - a float number
+/// ### Examples
+/// ```python
+/// print(rem(10, 3)) # it will print 1.0
+/// ```
+/// ```python
+/// print(rem(100, 6)) # it will print 4.0
+/// ```
+pub fn rem(a: f64, b: f64) -> PyResult<f64> {
+    check_is_finite(a)?; check_is_finite(b)?;
+    Ok( a % b )
+}
+
+
+#[pyfunction]
 /// Returns the product between all numbers in a list.
-/// # Arguments
-/// `args` - float numbers
-pub fn product(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
-    empty(args)?;
-    let mut result: f64 = args.get_item(0)?.extract()?;
-
-    for i in 1..args.len() {
-        let val: f64 = args.get_item(i)?.extract()?;
-        result *= val;
-    }
-
-    check_is_finite(result)
+/// ### Arguments
+/// `args` - list with float numbers
+/// ### Examples
+/// ```python
+/// print(product([10, 10])) # it will print 100.0
+/// ```
+/// ```python
+/// print(product([3, 9, 17])) # it will print 459.0
+/// ```
+pub fn product(args: Vec<f64>) -> PyResult<f64> {
+    empty(&args)?;
+    check_is_finite(args.iter().product::<f64>())
 }
 
 
@@ -142,9 +134,7 @@ pub fn product(args: &Bound<'_, PyTuple>) -> PyResult<f64> {
 /// # Arguments
 /// `number` - a float number
 pub fn square(number: f64) -> PyResult<f64> {
-    let result = number.powf(2.0);
-
-    check_is_finite(result)
+    check_is_finite(number.powf(2.0))
 }
 
 
@@ -153,9 +143,7 @@ pub fn square(number: f64) -> PyResult<f64> {
 /// # Arguments
 /// `number` - a float number
 pub fn cube(number: f64) -> PyResult<f64> {
-    let result = number.powf(3.0);
-
-    check_is_finite(result)
+    check_is_finite(number.powf(3.0))
 }
 
 
@@ -165,13 +153,8 @@ pub fn cube(number: f64) -> PyResult<f64> {
 /// `number` - a float number<br>
 /// `exp` - a float number
 pub fn power(number: f64, exp: f64) -> PyResult<f64> {
-    if exp == 0.0 {
-        return Ok(1.0);
-    }
-
-    let result = number.powf(exp);
-
-    check_is_finite(result)
+    if exp == 0.0 { return Ok(1.0); }
+    check_is_finite(number.powf(exp))
 }
 
 
@@ -180,13 +163,8 @@ pub fn power(number: f64, exp: f64) -> PyResult<f64> {
 /// # Arguments
 /// `number` - a float number
 pub fn square_root(number: f64) -> PyResult<f64> {
-    if number < 0.0 {
-        return Err(PyValueError::new_err("Number cant be negative."));
-    }
-
-    let result = number.powf(0.5);
-
-    check_is_finite(result)
+    if number < 0.0 { return Err(PyValueError::new_err("Number cant be negative.")) }
+    check_is_finite(number.powf(0.5))
 }
 
 
@@ -195,9 +173,7 @@ pub fn square_root(number: f64) -> PyResult<f64> {
 /// # Arguments
 /// `number` - a float number
 pub fn cube_root(number: f64) -> PyResult<f64> {
-    let result = number.powf(1.0 / 3.0);
-
-    check_is_finite(result)
+    check_is_finite(number.powf(1.0 / 3.0))
 }
 
 
@@ -207,14 +183,9 @@ pub fn cube_root(number: f64) -> PyResult<f64> {
 /// `number` - a float number<br>
 /// `power` - a float number
 pub fn root(number: f64, power: f64) -> PyResult<f64> {
-    if power < 0.0 {
-        return Err(PyValueError::new_err("Power cant be negative."));
-    }
-
+    if power < 0.0 { return Err(PyValueError::new_err("Power cant be negative.")) }
     let total_power = 1.0 / power;
-    let result = number.powf(total_power);
-
-    check_is_finite(result)
+    check_is_finite(number.powf(total_power))
 }
 
 
@@ -224,9 +195,7 @@ pub fn root(number: f64, power: f64) -> PyResult<f64> {
 /// `number` - an integer number
 pub fn factorial(number: BigInt) -> PyResult<BigInt> {
     // i created the bigint type so that there would be no limitations in calculating the factorial
-    if number < BigInt::zero() {
-        return Err(PyValueError::new_err("Number cant be negattive."));
-    }
+    if number < BigInt::zero() { return Err(PyValueError::new_err("Number cant be negattive.")); }
 
     let mut result = BigInt::one();
     let mut current = BigInt::one();
@@ -256,17 +225,11 @@ pub fn gcd_rust(a: BigInt, b: BigInt) -> BigInt {
 /// Returns the GCD of `args` in the list.
 /// # Arguments
 /// `args` - integer numbers
-#[pyo3(signature = (*args))]
-pub fn gcd(args: &Bound<'_, PyTuple>) -> PyResult<BigInt> {
-    empty(args)?;
-
-    let mut res: BigInt = args.get_item(0)?.extract()?;
-    for i in 1..args.len() {
-        let next_val: BigInt = args.get_item(i)?.extract()?;
-        res = gcd_rust(res, next_val);
-    }
-    Ok(res)
+pub fn gcd(args: Vec<BigInt>) -> PyResult<BigInt> {
+    empty(&args)?;
+    Ok(args[1..].iter().fold(args[0].clone(), |acc, next_val| { gcd_rust(acc, next_val.clone()) }))
 }
+
 
 #[pyfunction]
 /// Returns the LCM of `args`.
@@ -274,7 +237,7 @@ pub fn gcd(args: &Bound<'_, PyTuple>) -> PyResult<BigInt> {
 /// `args` - integer numbers
 #[pyo3(signature = (*args))]
 pub fn lcm(args: &Bound<'_, PyTuple>) -> PyResult<BigInt> {
-    empty(args)?;
+    // empty(args)?;
     let mut res: BigInt = args.get_item(0)?.extract()?;
 
     if res.is_zero() {
@@ -540,17 +503,30 @@ pub fn absolute(number: f64) -> PyResult<f64> {
 
 
 #[pyfunction]
+/// Returns the logarithm of`number` to `base`.
+/// ### Arguments
+/// `base` - a float number<br>
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(log(10, 100)) # it will print 2.0
+/// ```
+/// ```python
+/// print(log(2, 8)) # it will print 3.0
+/// ```
+pub fn log(base: f64, number: f64) -> PyResult<f64> {
+    check_is_finite(base)?; check_is_finite(number)?;
+    Ok(number.log(base))
+}
+
+
+#[pyfunction]
 /// Returns the result of tetration of `base` to height `n`.
-/// # Arguments
+/// ### Arguments
 /// `a` - a positive integer (base)
 /// `n` - a non-negative integer (the height)
 pub fn tetration(a: i64, n: u32) -> PyResult<BigInt> {
-    if a <= 0 {
-        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
-            "The base must be positive integer."
-        ));
-    }
-
+    if a <= 0 { return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>("The base must be positive integer.")) }
     let base = BigInt::from_i64(a).unwrap();
     
     match n {
@@ -565,5 +541,4 @@ pub fn tetration(a: i64, n: u32) -> PyResult<BigInt> {
         }
     }
 }
-
 

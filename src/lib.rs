@@ -2,13 +2,16 @@ use pyo3::prelude::*;
 
 mod functions;
 mod class;
+mod lists;
 
 #[pymodule]
 fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    // functions
     m.add_function(wrap_pyfunction!(functions::sum_of, m)?)?;
     m.add_function(wrap_pyfunction!(functions::dif_of, m)?)?;
     m.add_function(wrap_pyfunction!(functions::div_of, m)?)?;
     m.add_function(wrap_pyfunction!(functions::int_div_of, m)?)?;
+    m.add_function(wrap_pyfunction!(functions::rem, m)?)?;
     m.add_function(wrap_pyfunction!(functions::product, m)?)?;
     m.add_function(wrap_pyfunction!(functions::square, m)?)?;
     m.add_function(wrap_pyfunction!(functions::cube, m)?)?;
@@ -35,7 +38,10 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(functions::cot, m)?)?;
     m.add_function(wrap_pyfunction!(functions::fibonacci, m)?)?;
     m.add_function(wrap_pyfunction!(functions::absolute, m)?)?;
+    m.add_function(wrap_pyfunction!(functions::log, m)?)?;
     m.add_function(wrap_pyfunction!(functions::tetration, m)?)?;
+
+    // class
     m.add_class::<class::Crabnum>()?;
     Ok(())
 }

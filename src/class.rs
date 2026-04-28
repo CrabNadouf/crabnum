@@ -32,36 +32,34 @@ impl Crabnum {
     }
 
     #[pyo3(signature = (*args))]
-    pub fn sum_of(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
-        let result: f64 = sum_of(args)?;
-        Ok( Self { number: self.number + result })
+    pub fn sum_of(&self, args: Vec<f64>) -> PyResult<Self> {
+        Ok( Self { number: self.number + sum_of(args)? })
     }
 
     #[pyo3(signature = (*args))]
-    pub fn dif_of(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
-        let result: f64 = sum_of(args)?;
-        Ok( Self { number: self.number - result})
+    pub fn dif_of(&self, args: Vec<f64>) -> PyResult<Self> {
+        Ok( Self { number: self.number - sum_of(args)? })
     }
 
-    #[pyo3(signature = (*args))]
-    pub fn div_of(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
+    pub fn div_of(&self, args: Vec<f64>) -> PyResult<Self> {
         let result: f64 = product(args)?;
-        if result == 0.0 {
-            return Err(PyZeroDivisionError::new_err("Can't divide by zero!"))
-        }
-        Ok( Self { number: self.number / result})
+        if result == 0.0 { return Err(PyZeroDivisionError::new_err("Can't divide by zero!")) }
+        Ok( Self { number: self.number / result })
     }
 
     #[pyo3(signature = (*args))]
-    pub fn int_div_of(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
+    pub fn int_div_of(&self, args: Vec<f64>) -> PyResult<Self> {
         let result_1: f64 = product(args)?;
         let selfnumber = self.number as i64;
         let number = result_1 as i64;
         Ok( Self { number: (selfnumber / number) as f64})
     }
 
-    #[pyo3(signature = (*args))]
-    pub fn product(&self, args: &Bound<'_,  PyTuple>) -> PyResult<Self> {
+    pub fn rem(&self, a: f64) -> PyResult<Self> {
+        Ok( Self { number: rem(self.number, a)? })
+    }
+
+    pub fn product(&self, args: Vec<f64>) -> PyResult<Self> {
         Ok( Self { number: self.number * product(args)?})
     }
 
@@ -205,5 +203,9 @@ impl Crabnum {
 
     pub fn absolute(&self) -> PyResult<Self> {
         Ok( Self { number: absolute(self.number)? })
+    }
+
+    pub fn log(&self, base: f64) -> PyResult<Self> {
+        Ok( Self { number: log(base, self.number)? })
     }
 }
