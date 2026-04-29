@@ -5,11 +5,11 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 use crate::functions::*;
+use num_bigint::{BigInt, BigUint};
+use num_traits::{FromPrimitive, ToPrimitive, Zero};
+use pyo3::exceptions::{PyValueError, PyZeroDivisionError};
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
-use pyo3::exceptions::{PyZeroDivisionError, PyValueError};
-use num_bigint::{BigInt, BigUint};
-use num_traits::{Zero, ToPrimitive, FromPrimitive};
 
 #[pyclass]
 pub struct Crabnum {
@@ -26,25 +26,33 @@ impl Crabnum {
     fn __str__(&self) -> PyResult<String> {
         Ok(self.number.to_string())
     }
-    
+
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("Crabnum({})", self.number))
     }
 
     #[pyo3(signature = (*args))]
     pub fn sum_of(&self, args: Vec<f64>) -> PyResult<Self> {
-        Ok( Self { number: self.number + sum_of(args)? })
+        Ok(Self {
+            number: self.number + sum_of(args)?,
+        })
     }
 
     #[pyo3(signature = (*args))]
     pub fn dif_of(&self, args: Vec<f64>) -> PyResult<Self> {
-        Ok( Self { number: self.number - sum_of(args)? })
+        Ok(Self {
+            number: self.number - sum_of(args)?,
+        })
     }
 
     pub fn div_of(&self, args: Vec<f64>) -> PyResult<Self> {
         let result: f64 = product(args)?;
-        if result == 0.0 { return Err(PyZeroDivisionError::new_err("Can't divide by zero!")) }
-        Ok( Self { number: self.number / result })
+        if result == 0.0 {
+            return Err(PyZeroDivisionError::new_err("Can't divide by zero!"));
+        }
+        Ok(Self {
+            number: self.number / result,
+        })
     }
 
     #[pyo3(signature = (*args))]
@@ -52,160 +60,187 @@ impl Crabnum {
         let result_1: f64 = product(args)?;
         let selfnumber = self.number as i64;
         let number = result_1 as i64;
-        Ok( Self { number: (selfnumber / number) as f64})
+        Ok(Self {
+            number: (selfnumber / number) as f64,
+        })
     }
 
     pub fn rem(&self, a: f64) -> PyResult<Self> {
-        Ok( Self { number: rem(self.number, a)? })
+        Ok(Self {
+            number: rem(self.number, a)?,
+        })
     }
 
     pub fn product(&self, args: Vec<f64>) -> PyResult<Self> {
-        Ok( Self { number: self.number * product(args)?})
+        Ok(Self {
+            number: self.number * product(args)?,
+        })
     }
 
     pub fn square(&self) -> PyResult<Self> {
-        Ok( Self { number: square(self.number)?})
+        Ok(Self {
+            number: square(self.number)?,
+        })
     }
 
     pub fn cube(&self) -> PyResult<Self> {
-        Ok( Self { number: cube(self.number)?})
+        Ok(Self {
+            number: cube(self.number)?,
+        })
     }
 
     pub fn power(&self, exp: f64) -> PyResult<Self> {
-        Ok( Self { number: power(self.number, exp)?})
+        Ok(Self {
+            number: power(self.number, exp)?,
+        })
     }
 
     pub fn square_root(&self) -> PyResult<Self> {
-        Ok( Self { number: square_root(self.number)?})
+        Ok(Self {
+            number: square_root(self.number)?,
+        })
     }
 
     pub fn cube_root(&self) -> PyResult<Self> {
-        Ok( Self { number: cube_root(self.number)?})
+        Ok(Self {
+            number: cube_root(self.number)?,
+        })
     }
 
     pub fn root(&self, power: f64) -> PyResult<Self> {
-        Ok( Self { number: root(self.number, power)?})
+        Ok(Self {
+            number: root(self.number, power)?,
+        })
     }
 
     pub fn factorial(&self) -> PyResult<Self> {
-        let n = self.number.round() as u64;
-        let number = BigInt::from(n);
-        let res_bigint = factorial(number)?;
-        let result = res_bigint.to_f64().ok_or_else(|| {PyValueError::new_err("Result is too large to fit in f64")})?;
-        Ok( Self { number: result })
+        Ok(Self {
+            number: factorial(BigInt::from(self.number.round() as u64))?
+                .to_f64()
+                .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?,
+        })
     }
 
-    #[pyo3(signature = (*args))]
-    pub fn gcd(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
-        let n = self.number.round() as i64; 
-        let self_bigint = BigInt::from(n);/*- */
-        let args_gcd = gcd(args)?;
-        let result_bigint = gcd_rust(self_bigint, args_gcd);
-        let result = result_bigint.to_f64().ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
-        Ok( Self { number: result })
+    pub fn gcd(&self, args: Vec<BigInt>) -> PyResult<Self> {
+        Ok(Self {
+            number: gcd_rust(BigInt::from(self.number.round() as i64), gcd(args)?)
+                .to_f64()
+                .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?,
+        })
     }
 
-    #[pyo3(signature = (*args))]
-    pub fn lcm(&self, args: &Bound<'_, PyTuple>) -> PyResult<Self> {
-        let n = self.number.round().abs() as u64;
-        let mut result = BigInt::from(n);
+    pub fn lcm(&self, args: Vec<f64>) -> PyResult<Self> {
+        let mut result = BigInt::from(self.number.round().abs() as u64);
         if result.is_zero() {
             return Ok(Self { number: 0.0 });
         }
-        
+
         for i in 0..args.len() {
-            let val: f64 = args.get_item(i)?.extract()?;
-            let next_val = BigInt::from(val.round().abs() as u64);  
+            let val: f64 = args[i];
+            let next_val = BigInt::from(val.round().abs() as u64);
             if next_val.is_zero() {
                 return Ok(Self { number: 0.0 });
             }
             let g = gcd_rust(result.clone(), next_val.clone());
             result = (result * next_val) / g;
         }
-        let number = result.to_f64()
+        let number = result
+            .to_f64()
             .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
-        
-        Ok( Self { number })
+        Ok(Self { number })
     }
 
     pub fn floor(&self) -> PyResult<Self> {
-        Ok( Self { number: self.number.floor() })
+        Ok(Self {
+            number: self.number.floor(),
+        })
     }
 
     pub fn ceil(&self) -> PyResult<Self> {
-        Ok( Self { number: self.number.ceil()})
+        Ok(Self {
+            number: self.number.ceil(),
+        })
     }
 
     pub fn is_positive(&self) -> PyResult<bool> {
-        Ok( is_positive(self.number)? )
+        Ok(is_positive(self.number)?)
     }
 
     pub fn is_negative(&self) -> PyResult<bool> {
-        Ok( is_negative(self.number)? )
+        Ok(is_negative(self.number)?)
     }
 
     pub fn sign(&self) -> PyResult<i8> {
-        Ok( sign(self.number)? )
+        Ok(sign(self.number)?)
     }
 
     pub fn is_integer(&self) -> PyResult<bool> {
-        Ok( is_integer(self.number)? )
+        Ok(is_integer(self.number)?)
     }
 
     pub fn is_even(&self) -> PyResult<bool> {
-        let permission = is_integer(self.number)?;
-        match permission {
-            true => {
-                Ok( is_even(self.number as i64)? )
-            },
-            false => Err(PyValueError::new_err("Number must be integer."))
+        match is_integer(self.number)? {
+            true => Ok(is_even(self.number as i64)?),
+            false => Err(PyValueError::new_err("Number must be integer.")),
         }
     }
 
     pub fn is_odd(&self) -> PyResult<bool> {
-        let permission = is_integer(self.number)?;
-        match permission {
-            true => {
-                Ok( is_odd(self.number as i64)? )
-            },
-            false => Err(PyValueError::new_err("Number must be integer."))
+        match is_integer(self.number)? {
+            true => Ok(is_odd(self.number as i64)?),
+            false => Err(PyValueError::new_err("Number must be integer.")),
         }
     }
 
     pub fn sin(&self) -> PyResult<Self> {
-        Ok( Self { number: sin(self.number)? })
+        Ok(Self {
+            number: sin(self.number)?,
+        })
     }
 
     pub fn csc(&self) -> PyResult<Self> {
-        Ok( Self { number: csc(self.number)? })
+        Ok(Self {
+            number: csc(self.number)?,
+        })
     }
 
     pub fn cos(&self) -> PyResult<Self> {
-        Ok( Self { number: cos(self.number)? })
+        Ok(Self {
+            number: cos(self.number)?,
+        })
     }
 
     pub fn sec(&self) -> PyResult<Self> {
-        Ok( Self { number: sec(self.number)? })
+        Ok(Self {
+            number: sec(self.number)?,
+        })
     }
 
     pub fn tan(&self) -> PyResult<Self> {
-        Ok( Self { number: tan(self.number)? })
+        Ok(Self {
+            number: tan(self.number)?,
+        })
     }
 
     pub fn cot(&self) -> PyResult<Self> {
-        Ok( Self { number: cot(self.number)? } )
+        Ok(Self {
+            number: cot(self.number)?,
+        })
     }
 
     pub fn fibonacci(&self) -> PyResult<BigUint> {
-        let res = fibonacci(self.number as usize);
-        Ok(res?)
+        Ok(fibonacci(self.number as usize)?)
     }
 
     pub fn absolute(&self) -> PyResult<Self> {
-        Ok( Self { number: absolute(self.number)? })
+        Ok(Self {
+            number: absolute(self.number)?,
+        })
     }
 
     pub fn log(&self, base: f64) -> PyResult<Self> {
-        Ok( Self { number: log(base, self.number)? })
+        Ok(Self {
+            number: log(base, self.number)?,
+        })
     }
 }

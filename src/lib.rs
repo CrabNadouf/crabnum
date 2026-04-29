@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 
-mod functions;
 mod class;
+mod functions;
 mod lists;
 
 #[pymodule]
