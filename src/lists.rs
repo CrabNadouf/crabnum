@@ -100,3 +100,15 @@ pub fn merge(mut list_1: Vec<f64>, args: Vec<Vec<f64>>) -> PyResult<Vec<f64>> {
     }
     Ok(list_1)
 }
+
+#[pyfunction]
+pub fn median(a: Vec<f64>) -> PyResult<f64> {
+    empty(&a)?;
+    let sorted = sorted_list(a)?;
+    let mid = sorted.len() / 2;
+    if mid % 2 == 0 {
+        Ok((sorted[mid-1] + sorted[mid]) / 2.0)
+    } else {
+        Ok(sorted[mid])
+    }
+}
