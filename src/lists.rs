@@ -67,12 +67,36 @@ pub fn clear(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
 
 #[pyfunction]
 pub fn sorted_list(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
+    empty(&args)?;
     args.sort_by(|a, b| a.total_cmp(b));
     Ok( args )
 }
 
 #[pyfunction]
 pub fn reversed_list(mut args:  Vec<f64>) -> PyResult<Vec<f64>> {
+    empty(&args)?;
     args.sort_by(|a, b| b.total_cmp(a));
     Ok( args )
+}
+
+#[pyfunction]
+pub fn count(args: Vec<f64>, x: f64) -> PyResult<i64> {
+    empty(&args)?;
+    let mut total = 0;
+    for i in &args {
+        if *i == x {
+            total += 1;
+        }
+    }
+    Ok(total)
+}
+
+#[pyfunction]
+pub fn merge(mut list_1: Vec<f64>, args: Vec<Vec<f64>>) -> PyResult<Vec<f64>> {
+    empty(&list_1)?;
+    empty(&args)?;
+    for i in args {
+        list_1.extend(i)
+    }
+    Ok(list_1)
 }

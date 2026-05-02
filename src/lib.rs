@@ -53,5 +53,7 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lists::clear, m)?)?;
     m.add_function(wrap_pyfunction!(lists::sorted_list, m)?)?;
     m.add_function(wrap_pyfunction!(lists::reversed_list, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::count, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::merge, m)?)?;
     Ok(())
 }
