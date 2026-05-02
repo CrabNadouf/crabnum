@@ -4,7 +4,6 @@ use num_bigint::{BigInt, BigUint};
 use num_traits::{FromPrimitive, One, Signed, ToPrimitive, Zero};
 use pyo3::exceptions::{PyOverflowError, PyValueError, PyZeroDivisionError};
 use pyo3::prelude::*;
-use pyo3::types::PyTuple;
 use std::mem::replace;
 
 // special functions
@@ -205,7 +204,6 @@ pub fn root(number: f64, power: f64) -> PyResult<f64> {
 /// # Arguments
 /// `number` - an integer number
 pub fn factorial(number: BigInt) -> PyResult<BigInt> {
-    // i created the bigint type so that there would be no limitations in calculating the factorial
     if number < BigInt::zero() {
         return Err(PyValueError::new_err("Number cant be negattive."));
     }

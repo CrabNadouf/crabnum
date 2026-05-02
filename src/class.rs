@@ -48,7 +48,7 @@ impl Crabnum {
     pub fn div_of(&self, args: Vec<f64>) -> PyResult<Self> {
         let result: f64 = product(args)?;
         if result == 0.0 {
-            return Err(PyZeroDivisionError::new_err("Can't divide by zero!"));
+            return Err(PyValueError::new_err("Can't divide by zero!"));
         }
         Ok(Self {
             number: self.number / result,
@@ -57,11 +57,12 @@ impl Crabnum {
 
     #[pyo3(signature = (*args))]
     pub fn int_div_of(&self, args: Vec<f64>) -> PyResult<Self> {
-        let result_1: f64 = product(args)?;
-        let selfnumber = self.number as i64;
-        let number = result_1 as i64;
+        let res = product(args)?;
+        if res == 0.0 {
+            return Err(PyValueError::new_err("Can't divide by zero!"))
+        }
         Ok(Self {
-            number: (selfnumber / number) as f64,
+            number: (self.number as i64 / res as i64) as f64,
         })
     }
 
@@ -130,24 +131,13 @@ impl Crabnum {
     }
 
     pub fn lcm(&self, args: Vec<f64>) -> PyResult<Self> {
-        let mut result = BigInt::from(self.number.round().abs() as u64);
-        if result.is_zero() {
-            return Ok(Self { number: 0.0 });
+        let first = BigInt::from(self.number as i64);
+        let mut arguments = vec![first];
+        for i in args {
+            let val = BigInt::from(i as i64);
+            arguments.push(val);
         }
-
-        for i in 0..args.len() {
-            let val: f64 = args[i];
-            let next_val = BigInt::from(val.round().abs() as u64);
-            if next_val.is_zero() {
-                return Ok(Self { number: 0.0 });
-            }
-            let g = gcd_rust(result.clone(), next_val.clone());
-            result = (result * next_val) / g;
-        }
-        let number = result
-            .to_f64()
-            .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?;
-        Ok(Self { number })
+        Ok(Self { number: lcm(arguments)?.to_f64().unwrap_or(f64::NAN) })
     }
 
     pub fn floor(&self) -> PyResult<Self> {

@@ -43,5 +43,10 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     // class
     m.add_class::<class::Crabnum>()?;
+
+    // lists
+    m.add_function(wrap_pyfunction!(lists::mean, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::biggest, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::biggest_index, m)?)?;
     Ok(())
 }
