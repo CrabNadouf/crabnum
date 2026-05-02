@@ -4,19 +4,19 @@ use crate::functions::*;
 use pyo3::prelude::*;
 
 #[pyfunction]
-pub fn mean(args: Vec<f64>) -> PyResult<f64> {
-    let len = args.len() as f64;
-    empty(&args)?;
-    Ok( sum_of(args)? / len  )
+pub fn mean(a: Vec<f64>) -> PyResult<f64> {
+    let len = a.len() as f64;
+    empty(&a)?;
+    Ok( sum_of(a)? / len  )
 }
 
 #[pyfunction]
-pub fn biggest(args: Vec<f64>) -> PyResult<f64> {
-    empty(&args)?;
-    let mut biggest = args[0];
-    for i in &args {
-        if args[*i as usize] > biggest {
-            biggest = args[*i as usize];
+pub fn biggest(a: Vec<f64>) -> PyResult<f64> {
+    empty(&a)?;
+    let mut biggest = a[0];
+    for i in &a {
+        if a[*i as usize] > biggest {
+            biggest = a[*i as usize];
         }
     }
     Ok( biggest )
@@ -24,11 +24,11 @@ pub fn biggest(args: Vec<f64>) -> PyResult<f64> {
 
 
 #[pyfunction]
-pub fn biggest_index(args: Vec<f64>) -> PyResult<usize> {
-    empty(&args)?;
+pub fn biggest_index(a: Vec<f64>) -> PyResult<usize> {
+    empty(&a)?;
     let mut biggest_index: usize = 0;
-    for i in &args {
-        if args[*i as usize] > args[biggest_index] {
+    for i in &a {
+        if a[*i as usize] > a[biggest_index] {
             biggest_index = *i as usize;
         }
     }
@@ -36,23 +36,23 @@ pub fn biggest_index(args: Vec<f64>) -> PyResult<usize> {
 }
 
 #[pyfunction]
-pub fn smallest(args: Vec<f64>) -> PyResult<f64> {
-    empty(&args)?;
-    let mut smallest = args[0];
-    for i in &args {
-        if args[*i as usize] < smallest {
-            smallest = args[*i as usize];
+pub fn smallest(a: Vec<f64>) -> PyResult<f64> {
+    empty(&a)?;
+    let mut smallest = a[0];
+    for i in &a {
+        if a[*i as usize] < smallest {
+            smallest = a[*i as usize];
         }
     }
     Ok( smallest )
 }
 
 #[pyfunction]
-pub fn smallest_index(args: Vec<f64>) -> PyResult<usize> {
-    empty(&args)?;
+pub fn smallest_index(a: Vec<f64>) -> PyResult<usize> {
+    empty(&a)?;
     let mut smallest: usize = 0;
-    for i in &args {
-        if args[*i as usize] < args[smallest] {
+    for i in &a {
+        if a[*i as usize] < a[smallest] {
             smallest = *i as usize;
         }
     }
@@ -60,30 +60,30 @@ pub fn smallest_index(args: Vec<f64>) -> PyResult<usize> {
 }
 
 #[pyfunction]
-pub fn clear(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
-    args.clear();
-    Ok( args )
+pub fn clear(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
+    a.clear();
+    Ok( a )
 }
 
 #[pyfunction]
-pub fn sorted_list(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
-    empty(&args)?;
-    args.sort_by(|a, b| a.total_cmp(b));
-    Ok( args )
+pub fn sorted_list(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
+    empty(&a)?;
+    a.sort_by(|a, b| a.total_cmp(b));
+    Ok( a )
 }
 
 #[pyfunction]
-pub fn reversed_list(mut args:  Vec<f64>) -> PyResult<Vec<f64>> {
-    empty(&args)?;
-    args.sort_by(|a, b| b.total_cmp(a));
-    Ok( args )
+pub fn reversed_list(mut a:  Vec<f64>) -> PyResult<Vec<f64>> {
+    empty(&a)?;
+    a.sort_by(|a, b| b.total_cmp(a));
+    Ok( a )
 }
 
 #[pyfunction]
-pub fn count(args: Vec<f64>, x: f64) -> PyResult<i64> {
-    empty(&args)?;
+pub fn count(a: Vec<f64>, x: f64) -> PyResult<i64> {
+    empty(&a)?;
     let mut total = 0;
-    for i in &args {
+    for i in &a {
         if *i == x {
             total += 1;
         }
