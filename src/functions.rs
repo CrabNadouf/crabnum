@@ -2,7 +2,7 @@
 
 use num_bigint::{BigInt, BigUint};
 use num_traits::{FromPrimitive, One, Signed, ToPrimitive, Zero};
-use pyo3::exceptions::{PyOverflowError, PyValueError, PyZeroDivisionError};
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::mem::replace;
 
