@@ -50,5 +50,8 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lists::biggest_index, m)?)?;
     m.add_function(wrap_pyfunction!(lists::smallest, m)?)?;
     m.add_function(wrap_pyfunction!(lists::smallest_index, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::clear, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::sorted_list, m)?)?;
+    m.add_function(wrap_pyfunction!(lists::reversed_list, m)?)?;
     Ok(())
 }

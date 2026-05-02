@@ -58,3 +58,21 @@ pub fn smallest_index(args: Vec<f64>) -> PyResult<usize> {
     }
     Ok( smallest )
 }
+
+#[pyfunction]
+pub fn clear(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
+    args.clear();
+    Ok( args )
+}
+
+#[pyfunction]
+pub fn sorted_list(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
+    args.sort_by(|a, b| a.total_cmp(b));
+    Ok( args )
+}
+
+#[pyfunction]
+pub fn reversed_list(mut args:  Vec<f64>) -> PyResult<Vec<f64>> {
+    args.sort_by(|a, b| b.total_cmp(a));
+    Ok( args )
+}
