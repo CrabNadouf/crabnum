@@ -106,7 +106,7 @@ pub fn median(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let sorted = sorted_list(a)?;
     let mid = sorted.len() / 2;
-    if mid % 2 == 0 {
+    if sorted.len() % 2 == 0 {
         Ok((sorted[mid-1] + sorted[mid]) / 2.0)
     } else {
         Ok(sorted[mid])
