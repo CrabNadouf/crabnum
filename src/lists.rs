@@ -2,6 +2,7 @@
 
 use crate::functions::*;
 use pyo3::prelude::*;
+use std::collections::HashSet;
 
 #[pyfunction]
 pub fn mean(a: Vec<f64>) -> PyResult<f64> {
@@ -11,7 +12,7 @@ pub fn mean(a: Vec<f64>) -> PyResult<f64> {
 }
 
 #[pyfunction]
-pub fn biggest(a: Vec<f64>) -> PyResult<f64> {
+pub fn argmax(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut biggest = a[0];
     for i in &a {
@@ -24,7 +25,7 @@ pub fn biggest(a: Vec<f64>) -> PyResult<f64> {
 
 
 #[pyfunction]
-pub fn biggest_index(a: Vec<f64>) -> PyResult<usize> {
+pub fn max_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut biggest_index: usize = 0;
     for i in &a {
@@ -36,7 +37,7 @@ pub fn biggest_index(a: Vec<f64>) -> PyResult<usize> {
 }
 
 #[pyfunction]
-pub fn smallest(a: Vec<f64>) -> PyResult<f64> {
+pub fn argmin(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut smallest = a[0];
     for i in &a {
@@ -48,7 +49,7 @@ pub fn smallest(a: Vec<f64>) -> PyResult<f64> {
 }
 
 #[pyfunction]
-pub fn smallest_index(a: Vec<f64>) -> PyResult<usize> {
+pub fn min_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut smallest: usize = 0;
     for i in &a {
@@ -111,4 +112,25 @@ pub fn median(a: Vec<f64>) -> PyResult<f64> {
     } else {
         Ok(sorted[mid])
     }
+}
+
+#[pyfunction]
+pub fn unique(a: Vec<f64>) -> PyResult<Vec<f64>> {
+    empty(&a)?;
+    let mut seen = HashSet::new();
+    let mut result = Vec::new();
+
+    for val in a {
+        if seen.insert(val.to_bits()) {
+            result.push(val);
+        }
+    }
+
+    Ok(result)
+}
+
+#[pyfunction]
+pub fn get_range(a: Vec<f64>) -> PyResult<f64> {
+    empty(&a)?;
+    Ok( argmax(a.clone())? - argmin(a)? )
 }
