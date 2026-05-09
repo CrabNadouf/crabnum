@@ -15,9 +15,9 @@ pub fn mean(a: Vec<f64>) -> PyResult<f64> {
 pub fn argmax(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut biggest = a[0];
-    for i in &a {
-        if a[*i as usize] > biggest {
-            biggest = a[*i as usize];
+    for &i in &a {
+        if i > biggest {
+            biggest = i;
         }
     }
     Ok( biggest )
@@ -28,21 +28,21 @@ pub fn argmax(a: Vec<f64>) -> PyResult<f64> {
 pub fn max_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut biggest_index: usize = 0;
-    for i in &a {
-        if a[*i as usize] > a[biggest_index] {
-            biggest_index = *i as usize;
+    for (i, &val) in a.iter().enumerate() {
+            if val > a[biggest_index] {
+                biggest_index = i;
+            }
         }
-    }
-    Ok( biggest_index )
+    Ok(biggest_index)
 }
 
 #[pyfunction]
 pub fn argmin(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut smallest = a[0];
-    for i in &a {
-        if a[*i as usize] < smallest {
-            smallest = a[*i as usize];
+    for &i in &a {
+        if i < smallest {
+            smallest = i;
         }
     }
     Ok( smallest )
@@ -52,12 +52,12 @@ pub fn argmin(a: Vec<f64>) -> PyResult<f64> {
 pub fn min_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut smallest: usize = 0;
-    for i in &a {
-        if a[*i as usize] < a[smallest] {
-            smallest = *i as usize;
+    for (i, &val) in a.iter().enumerate() {
+        if val < a[smallest] {
+            smallest = i;
         }
     }
-    Ok( smallest )
+    Ok(smallest)
 }
 
 #[pyfunction]
@@ -95,7 +95,6 @@ pub fn count(a: Vec<f64>, x: f64) -> PyResult<i64> {
 #[pyfunction]
 pub fn merge(mut list_1: Vec<f64>, args: Vec<Vec<f64>>) -> PyResult<Vec<f64>> {
     empty(&list_1)?;
-    empty(&args)?;
     for i in args {
         list_1.extend(i)
     }
@@ -129,8 +128,10 @@ pub fn unique(a: Vec<f64>) -> PyResult<Vec<f64>> {
     Ok(result)
 }
 
+
 #[pyfunction]
 pub fn get_range(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     Ok( argmax(a.clone())? - argmin(a)? )
 }
+
