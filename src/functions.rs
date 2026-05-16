@@ -141,25 +141,46 @@ pub fn product(args: Vec<f64>) -> PyResult<f64> {
 
 #[pyfunction]
 /// Returns the square of `number`.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(square(3)) # it will print 9.0
+/// ```
+/// ```python
+/// print(square(10)) # it will print 100.0
+/// ```
 pub fn square(number: f64) -> PyResult<f64> {
     check_is_finite(number.powf(2.0))
 }
 
 #[pyfunction]
 /// Returns the cube of `number`.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(cube(2)) # it will print 8.0
+/// ```
+/// ```python
+/// print(cube(4)) # it will print 64.0
+/// ```
 pub fn cube(number: f64) -> PyResult<f64> {
     check_is_finite(number.powf(3.0))
 }
 
 #[pyfunction]
 /// Returns a `number` raised to a `power`.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number<br>
 /// `exp` - a float number
+/// ### Examples
+/// ```python
+/// print(power(2, 5)) # it will print 32.0
+/// ```
+/// ```python
+/// print(power(7, 3)) # it will print 343.0
+/// ```
 pub fn power(number: f64, exp: f64) -> PyResult<f64> {
     if exp == 0.0 {
         return Ok(1.0);
@@ -169,40 +190,71 @@ pub fn power(number: f64, exp: f64) -> PyResult<f64> {
 
 #[pyfunction]
 /// Returns the square root of `number`.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples 
+/// ```python
+/// print(square_root(25)) # it will print 5.0
+/// ```
+/// ```python
+/// print(square_root(64)) # it will print 8.0
+/// ```
 pub fn square_root(number: f64) -> PyResult<f64> {
     if number < 0.0 {
         return Err(PyValueError::new_err("Number cant be negative."));
     }
-    check_is_finite(number.powf(0.5))
+    check_is_finite(number.sqrt())
 }
 
 #[pyfunction]
 /// Returns the cube root  of `number`.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(cube_root(8)) # it will print 2.0
+/// ```
+/// ```python
+/// print(cube_root(1331)) # it will print 11.0
+/// ```
+/// ```python
+/// print(cube_root(343)) # it will print 7.0
+/// ```
 pub fn cube_root(number: f64) -> PyResult<f64> {
-    check_is_finite(number.powf(1.0 / 3.0))
+    check_is_finite(number.cbrt())
 }
 
 #[pyfunction]
 /// Returns the `power`-th root of `number`.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number<br>
 /// `power` - a float number
+/// ### Examples
+/// ```python
+/// print(root(1331, 3)) # it will print 11.0
+/// ```
+/// ```python
+/// print(root(6561, 4)) # it will print 9.0
+/// ```
 pub fn root(number: f64, power: f64) -> PyResult<f64> {
-    if power < 0.0 {
+    if power <= 0.0 {
         return Err(PyValueError::new_err("Power cant be negative."));
     }
     let total_power = 1.0 / power;
-    check_is_finite(number.powf(total_power))
+    check_is_finite((number.powf(total_power)* 1e12).round() / 1e12)
 }
 
 #[pyfunction]
 /// Returns the factorial of `number`.
-/// # Arguments
+/// ### Arguments
 /// `number` - an integer number
+/// ### Examples
+/// ```python
+/// print(factorial(6)) # it will print 720
+/// ```
+/// ```python
+/// print(factorial(15)) # it will print 1307674368000
+/// ```
 pub fn factorial(number: BigInt) -> PyResult<BigInt> {
     if number < BigInt::zero() {
         return Err(PyValueError::new_err("Number cant be negattive."));
@@ -219,7 +271,7 @@ pub fn factorial(number: BigInt) -> PyResult<BigInt> {
     Ok(result)
 }
 
-// auxiliary function
+
 pub fn gcd_rust(a: BigInt, b: BigInt) -> BigInt {
     let mut a = a.abs();
     let mut b = b.abs();
@@ -232,8 +284,15 @@ pub fn gcd_rust(a: BigInt, b: BigInt) -> BigInt {
 
 #[pyfunction]
 /// Returns the GCD of `args` in the list.
-/// # Arguments
+/// ### Arguments
 /// `args` - integer numbers
+/// ### Examples
+/// ```python
+/// print(gcd([1, 2, 5])) # it will print 1
+/// ```
+/// ```python
+/// print(gcd([100, 60, 20])) # it will print 20
+/// ```
 pub fn gcd(args: Vec<BigInt>) -> PyResult<BigInt> {
     empty(&args)?;
     Ok(args[1..].iter().fold(args[0].clone(), |acc, next_val| {
@@ -243,8 +302,15 @@ pub fn gcd(args: Vec<BigInt>) -> PyResult<BigInt> {
 
 #[pyfunction]
 /// Returns the LCM of numbers in the list.
-/// # Arguments
+/// ### Arguments
 /// `args` - the list wih integer numbers
+/// ### Examples
+/// ```python
+/// print(lcm([100, 60, 20])) # it will print 300
+/// ```
+/// ```python
+/// print(lcm([50, 33, 27])) # it will print 14850
+/// ```
 pub fn lcm(args: Vec<BigInt>) -> PyResult<BigInt> {
     // empty(args)?;
     let mut res = args[0].clone();
@@ -269,8 +335,15 @@ pub fn lcm(args: Vec<BigInt>) -> PyResult<BigInt> {
 
 #[pyfunction]
 /// Returns `number` rounded down.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(floor(5.7)) # it will print 5
+/// ```
+/// ```python
+/// print(floor(99.99)) # it will print 99
+/// ```
 pub fn floor(mut number: f64) -> PyResult<i64> {
     number = number.floor();
     check_is_finite(number)?;
@@ -279,17 +352,35 @@ pub fn floor(mut number: f64) -> PyResult<i64> {
 
 #[pyfunction]
 /// Returns `number` rounded up.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(ceil(99.1)) # it will print 100
+/// ```
+/// ```python
+/// print(ceil(54.33)) # it will print 55
+/// ```
 pub fn ceil(number: f64) -> PyResult<i64> {
     check_is_finite(number)?;
     Ok(number.ceil() as i64)
 }
 
+
 #[pyfunction]
 /// Returns `true` if `number` is positive.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_positive(-6)) # it will print False
+/// ```
+/// ```python
+/// print(is_positive(0)) # it will print False
+/// ```
+/// ```python
+/// print(is_positive(11)) # it will print True
+/// ```
 pub fn is_positive(number: f64) -> PyResult<bool> {
     check_is_finite(number)?;
     Ok(number > 0.0)
@@ -297,20 +388,40 @@ pub fn is_positive(number: f64) -> PyResult<bool> {
 
 #[pyfunction]
 /// Returns `true` if `number` is negative.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_negative(99)) # it will print False
+/// ```
+/// ```python
+/// print(is_negative(-1798)) # it will print True
+/// ```
+/// ```python
+/// print(is_negative(0)) # it will print False
+/// ```
 pub fn is_negative(number: f64) -> PyResult<bool> {
     check_is_finite(number)?;
     Ok(number < 0.0)
 }
 
 #[pyfunction]
-/// # Returns <br>
+/// ### Returns <br>
 /// `-1` if `number` is negative,<br>
 /// `0` if `number` is zero, <br>
 /// `1` if `number` is positive.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(sign(0)) # it will print 0
+/// ```
+/// ```python
+/// print(sign(543)) # it will print 1
+/// ```
+/// ```python
+/// print(sign(-14)) # it will print -1
+/// ```
 pub fn sign(number: f64) -> PyResult<i8> {
     check_is_finite(number)?;
     if number > 0.0 {
@@ -324,35 +435,63 @@ pub fn sign(number: f64) -> PyResult<i8> {
 
 #[pyfunction]
 /// Returns `true` if `number` is integer.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_integer(8)) # it will print True
+/// ```
+/// ```python
+/// print(is_integer(6.5)) # it will print False
+/// ```
 pub fn is_integer(number: f64) -> PyResult<bool> {
     check_is_finite(number)?;
     Ok(number.fract() == 0.0)
 }
 
 #[pyfunction]
-/// # Returns
+/// ### Returns
 /// `true` if `number` is even, <br>
 /// `false` if number isn't even.
-/// # Arguments
+/// ### Arguments
 /// `number` - an integer number
+/// ### Examples
+/// ```python
+/// print(is_even(22)) # it will print True
+/// ```
+/// ```python
+/// print(is_even(21)) # it will print False
+/// ```
 pub fn is_even(number: i64) -> PyResult<bool> {
     Ok(number % 2 == 0)
 }
 
 #[pyfunction]
 /// Returns `true` if number is odd.
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_odd(7892)) # it will print False
+/// ```
+/// ```python
+/// print(is_odd(-73)) # it will print True
+/// ```
 pub fn is_odd(number: i64) -> PyResult<bool> {
     Ok(number % 2 != 0)
 }
 
 #[pyfunction]
 /// Returns the sine of `number` (in radians).
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(sin(0)) # it will print 0.0
+/// ```
+/// ```python
+/// print(sin(1.5707963267948966)) # it will print 1.0
+/// ```
 pub fn sin(number: f64) -> PyResult<f64> {
     check_is_finite(number)?;
     Ok(number.sin())
@@ -376,8 +515,15 @@ pub fn csc(number: f64) -> PyResult<f64> {
 
 #[pyfunction]
 /// Returns cosine of `number` (in radians).
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(cos(0)) # it will print 1.0
+/// ```
+/// ```python
+/// print(cos(2.0943951023931953)) # it will print -0.4999999999999998
+/// ```
 pub fn cos(number: f64) -> PyResult<f64> {
     check_is_finite(number)?;
     Ok(number.cos())
@@ -404,8 +550,15 @@ pub fn sec(number: f64) -> PyResult<f64> {
 
 #[pyfunction]
 /// Returns the tangent of `number` (in radians).
-/// # Arguments
+/// ### Arguments
 /// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(tan(0)) # it will print 0.0
+/// ```
+/// ```python
+/// print(tan(0.7853981633974483)) # it will print 0.9999999999999999
+/// ```
 pub fn tan(number: f64) -> PyResult<f64> {
     check_is_finite(number)?;
     Ok(number.tan())

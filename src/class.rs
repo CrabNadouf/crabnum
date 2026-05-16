@@ -59,7 +59,7 @@ impl Crabnum {
     pub fn int_div_of(&self, args: Vec<f64>) -> PyResult<Self> {
         let res = product(args)?;
         if res == 0.0 {
-            return Err(PyValueError::new_err("Can't divide by zero!"))
+            return Err(PyValueError::new_err("Can't divide by zero!"));
         }
         Ok(Self {
             number: (self.number as i64 / res as i64) as f64,
@@ -137,7 +137,9 @@ impl Crabnum {
             let val = BigInt::from(i as i64);
             arguments.push(val);
         }
-        Ok(Self { number: lcm(arguments)?.to_f64().unwrap_or(f64::NAN) })
+        Ok(Self {
+            number: lcm(arguments)?.to_f64().unwrap_or(f64::NAN),
+        })
     }
 
     pub fn floor(&self) -> PyResult<Self> {

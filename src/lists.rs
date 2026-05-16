@@ -8,7 +8,7 @@ use std::collections::HashSet;
 pub fn mean(a: Vec<f64>) -> PyResult<f64> {
     let len = a.len() as f64;
     empty(&a)?;
-    Ok( sum_of(a)? / len  )
+    Ok(sum_of(a)? / len)
 }
 
 #[pyfunction]
@@ -20,19 +20,18 @@ pub fn argmax(a: Vec<f64>) -> PyResult<f64> {
             biggest = i;
         }
     }
-    Ok( biggest )
+    Ok(biggest)
 }
-
 
 #[pyfunction]
 pub fn max_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut biggest_index: usize = 0;
     for (i, &val) in a.iter().enumerate() {
-            if val > a[biggest_index] {
-                biggest_index = i;
-            }
+        if val > a[biggest_index] {
+            biggest_index = i;
         }
+    }
     Ok(biggest_index)
 }
 
@@ -45,7 +44,7 @@ pub fn argmin(a: Vec<f64>) -> PyResult<f64> {
             smallest = i;
         }
     }
-    Ok( smallest )
+    Ok(smallest)
 }
 
 #[pyfunction]
@@ -63,21 +62,21 @@ pub fn min_index(a: Vec<f64>) -> PyResult<usize> {
 #[pyfunction]
 pub fn clear(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
     a.clear();
-    Ok( a )
+    Ok(a)
 }
 
 #[pyfunction]
 pub fn sorted_list(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
     empty(&a)?;
     a.sort_by(|a, b| a.total_cmp(b));
-    Ok( a )
+    Ok(a)
 }
 
 #[pyfunction]
-pub fn reversed_list(mut a:  Vec<f64>) -> PyResult<Vec<f64>> {
+pub fn reversed_list(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
     empty(&a)?;
     a.sort_by(|a, b| b.total_cmp(a));
-    Ok( a )
+    Ok(a)
 }
 
 #[pyfunction]
@@ -107,7 +106,7 @@ pub fn median(a: Vec<f64>) -> PyResult<f64> {
     let sorted = sorted_list(a)?;
     let mid = sorted.len() / 2;
     if sorted.len() % 2 == 0 {
-        Ok((sorted[mid-1] + sorted[mid]) / 2.0)
+        Ok((sorted[mid - 1] + sorted[mid]) / 2.0)
     } else {
         Ok(sorted[mid])
     }
@@ -128,10 +127,8 @@ pub fn unique(a: Vec<f64>) -> PyResult<Vec<f64>> {
     Ok(result)
 }
 
-
 #[pyfunction]
 pub fn get_range(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
-    Ok( argmax(a.clone())? - argmin(a)? )
+    Ok(argmax(a.clone())? - argmin(a)?)
 }
-
