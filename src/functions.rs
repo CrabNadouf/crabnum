@@ -617,16 +617,19 @@ pub(crate) fn pow_bigint(base: &BigInt, exponent: &BigInt) -> BigInt {
 /// ```
 /// ### Warning!
 /// The specified range must not exceed 91!
-pub fn fibonacci(n: usize) -> PyResult<BigUint> {
+pub fn fibonacci(n: usize) -> PyResult<Vec<BigUint>> {
+    let mut result = vec![];
     let mut f0: BigUint = Zero::zero();
     let mut f1: BigUint = One::one();
 
-    for _ in 0..n {
+    for _ in 0..=n {
+        result.push(f0.clone());
+
         let f2 = f0 + &f1;
         f0 = replace(&mut f1, f2);
     }
 
-    Ok(f0)
+    Ok(result)
 }
 
 #[pyfunction]

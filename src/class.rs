@@ -223,7 +223,7 @@ impl Crabnum {
         })
     }
 
-    pub fn fibonacci(&self) -> PyResult<BigUint> {
+    pub fn fibonacci(&self) -> PyResult<Vec<BigUint>> {
         Ok(fibonacci(self.number as usize)?)
     }
 
