@@ -123,10 +123,13 @@ impl Crabnum {
     }
 
     pub fn gcd(&self, args: Vec<BigInt>) -> PyResult<Self> {
+        let first = BigInt::from(self.number as i64);
+        let mut arguments = vec![first];
+        for i in args {
+            arguments.push(i);
+        }
         Ok(Self {
-            number: gcd_rust(BigInt::from(self.number.round() as i64), gcd(args)?)
-                .to_f64()
-                .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?,
+            number: gcd(arguments)?.to_f64().unwrap_or(f64::NAN),
         })
     }
 

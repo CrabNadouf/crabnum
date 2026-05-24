@@ -192,7 +192,7 @@ pub fn power(number: f64, exp: f64) -> PyResult<f64> {
 /// Returns the square root of `number`.
 /// ### Arguments
 /// `number` - a float number
-/// ### Examples 
+/// ### Examples
 /// ```python
 /// print(square_root(25)) # it will print 5.0
 /// ```
@@ -241,7 +241,7 @@ pub fn root(number: f64, power: f64) -> PyResult<f64> {
         return Err(PyValueError::new_err("Power cant be negative."));
     }
     let total_power = 1.0 / power;
-    check_is_finite((number.powf(total_power)* 1e12).round() / 1e12)
+    check_is_finite((number.powf(total_power) * 1e12).round() / 1e12)
 }
 
 #[pyfunction]
@@ -270,7 +270,6 @@ pub fn factorial(number: BigInt) -> PyResult<BigInt> {
 
     Ok(result)
 }
-
 
 pub fn gcd_rust(a: BigInt, b: BigInt) -> BigInt {
     let mut a = a.abs();
@@ -365,7 +364,6 @@ pub fn ceil(number: f64) -> PyResult<i64> {
     check_is_finite(number)?;
     Ok(number.ceil() as i64)
 }
-
 
 #[pyfunction]
 /// Returns `true` if `number` is positive.
