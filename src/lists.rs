@@ -25,6 +25,16 @@ pub fn mean(a: Vec<f64>) -> PyResult<f64> {
 }
 
 #[pyfunction]
+/// Returns the maximum value in the list.
+/// ## Arguments
+/// `a` - a list with float numbers
+/// ## Examples
+/// ```python
+/// print(max_value([1, 5, 7, 1, 3])) # it will print 7.0
+/// ```
+/// ```python
+/// print(max_value([0, -2, 4, 1, -7])) # it will print 4.0
+/// ```
 pub fn max_value(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut biggest = a[0];
@@ -37,6 +47,16 @@ pub fn max_value(a: Vec<f64>) -> PyResult<f64> {
 }
 
 #[pyfunction]
+/// Returns the index of maximum value in the list.
+/// ## Arguments
+/// `a` - a list with float numbers
+/// ## Examples
+/// ```python
+/// print(max_index([1, 2, 3, 5, 4])) # it will print 3
+/// ```
+/// ```python
+/// print(max_index([-1, -2, 0, -5, -7])) # it will print 2
+/// ```
 pub fn max_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut biggest_index: usize = 0;
@@ -49,6 +69,16 @@ pub fn max_index(a: Vec<f64>) -> PyResult<usize> {
 }
 
 #[pyfunction]
+/// Returns the minimum value in the list.
+/// ## Arguments
+/// `a` - a list with float numbers
+/// ## Examples
+/// ```python
+/// print(min_value([-1, -2, 0, -5, -7])) # it will print -7.0
+/// ```
+/// ```python
+/// print(min_value([123, 54, 3242, 2, 434, 0, -3, 322])) # it will print -3.0
+/// ```
 pub fn min_value(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut smallest = a[0];
@@ -61,6 +91,16 @@ pub fn min_value(a: Vec<f64>) -> PyResult<f64> {
 }
 
 #[pyfunction]
+/// Returns the index of minimum value in the list.
+/// ## Arguments
+/// `a` - a list with float numbers
+/// ## Examples
+/// ```python
+/// print(min_index([123, 54, -2, 2, 434, 0, -3])) # it will print 6
+/// ```
+/// ```python
+/// print(min_index([0, 1, 2, 3])) # it will print 0
+/// ```
 pub fn min_index(a: Vec<f64>) -> PyResult<usize> {
     empty(&a)?;
     let mut smallest: usize = 0;
