@@ -123,6 +123,9 @@ impl Crabnum {
     }
 
     pub fn gcd(&self, args: Vec<BigInt>) -> PyResult<Self> {
+        if !is_integer(self.number)? {
+            return Err(PyValueError::new_err("Number must be an integer for GCD"));
+        }
         let first = BigInt::from(self.number as i64);
         let mut arguments = vec![first];
         for i in args {
@@ -134,6 +137,9 @@ impl Crabnum {
     }
 
     pub fn lcm(&self, args: Vec<f64>) -> PyResult<Self> {
+        if !is_integer(self.number)? {
+            return Err(PyValueError::new_err("Number must be an integer for LCM"));
+        }
         let first = BigInt::from(self.number as i64);
         let mut arguments = vec![first];
         for i in args {
