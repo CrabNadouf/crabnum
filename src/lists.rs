@@ -60,12 +60,6 @@ pub fn min_index(a: Vec<f64>) -> PyResult<usize> {
 }
 
 #[pyfunction]
-pub fn clear(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
-    a.clear();
-    Ok(a)
-}
-
-#[pyfunction]
 pub fn sorted_list(mut a: Vec<f64>) -> PyResult<Vec<f64>> {
     empty(&a)?;
     a.sort_by(|a, b| a.total_cmp(b));
