@@ -79,7 +79,7 @@ pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
 pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
     empty(&args)?;
     if args[1..].iter().any(|&x| x == 0.0) {
-        return Err(PyValueError::new_err("Integer division by zero!"));
+        return Err(PyValueError::new_err("Division by zero!"));
     }
     check_is_finite(args[1..].iter().fold(args[0], |acc, &x| acc / x))
 }
@@ -311,7 +311,7 @@ pub fn gcd(args: Vec<BigInt>) -> PyResult<BigInt> {
 /// print(lcm([50, 33, 27])) # it will print 14850
 /// ```
 pub fn lcm(args: Vec<BigInt>) -> PyResult<BigInt> {
-    // empty(args)?;
+    empty(&args)?;
     let mut res = args[0].clone();
 
     if res.is_zero() {
@@ -622,7 +622,7 @@ pub fn fibonacci(n: usize) -> PyResult<Vec<BigUint>> {
     let mut f0: BigUint = Zero::zero();
     let mut f1: BigUint = One::one();
 
-    for _ in 0..=n {
+    for _ in 0..n {
         result.push(f0.clone());
 
         let f2 = f0 + &f1;
