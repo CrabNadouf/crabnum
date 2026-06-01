@@ -25,7 +25,7 @@ pub fn mean(a: Vec<f64>) -> PyResult<f64> {
 }
 
 #[pyfunction]
-pub fn argmax(a: Vec<f64>) -> PyResult<f64> {
+pub fn max_value(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut biggest = a[0];
     for &i in &a {
@@ -49,7 +49,7 @@ pub fn max_index(a: Vec<f64>) -> PyResult<usize> {
 }
 
 #[pyfunction]
-pub fn argmin(a: Vec<f64>) -> PyResult<f64> {
+pub fn min_value(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
     let mut smallest = a[0];
     for &i in &a {
@@ -137,5 +137,5 @@ pub fn unique(a: Vec<f64>) -> PyResult<Vec<f64>> {
 #[pyfunction]
 pub fn get_range(a: Vec<f64>) -> PyResult<f64> {
     empty(&a)?;
-    Ok(argmax(a.clone())? - argmin(a)?)
+    Ok(max_value(a.clone())? - min_value(a)?)
 }
