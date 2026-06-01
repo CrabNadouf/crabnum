@@ -5,6 +5,19 @@ use pyo3::prelude::*;
 use std::collections::HashSet;
 
 #[pyfunction]
+/// Returns the arithmetic mean of the `a`.
+/// ## Arguments
+/// `a` - a list with float numbers
+/// ## Examples
+/// ```python
+/// print(mean([1, 2, 3, 4, 5])) # it will print 3.0
+/// ```
+/// ```python
+/// print(mean([3, 6, 9, 12, 15, 55])) # it will print 16.666666666666668
+/// ```
+/// ```python
+/// print(mean([1])) # it will print 1.0
+/// ```
 pub fn mean(a: Vec<f64>) -> PyResult<f64> {
     let len = a.len() as f64;
     empty(&a)?;
