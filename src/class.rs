@@ -31,14 +31,12 @@ impl Crabnum {
         Ok(format!("Crabnum({})", self.number))
     }
 
-    #[pyo3(signature = (*args))]
     pub fn sum_of(&self, args: Vec<f64>) -> PyResult<Self> {
         Ok(Self {
             number: self.number + sum_of(args)?,
         })
     }
 
-    #[pyo3(signature = (*args))]
     pub fn dif_of(&self, args: Vec<f64>) -> PyResult<Self> {
         Ok(Self {
             number: self.number - sum_of(args)?,
@@ -66,9 +64,9 @@ impl Crabnum {
         })
     }
 
-    pub fn rem(&self, a: f64) -> PyResult<Self> {
+    pub fn rem(&self, b: f64) -> PyResult<Self> {
         Ok(Self {
-            number: rem(self.number, a)?,
+            number: rem(self.number, b)?,
         })
     }
 
