@@ -197,5 +197,131 @@ class Crabnum:
         """
         ...
 
+    def is_positive(self) -> bool:
+        """Check if the current value is strictly greater than zero.
+
+        Returns:
+            bool: True if value > 0, False otherwise.
+        """
+        ...
+
+    def is_negative(self) -> bool:
+        """Check if the current value is strictly less than zero.
+
+        Returns:
+            bool: True if value < 0, False otherwise.
+        """
+        ...
+
+    def sign(self) -> int:
+        """Check the sign of the current value.
+        
+        Returns:
+            int: -1 if the current value < 0, 0 if the current value = 0, 1 if the current value > 0
+        """
+        ...
+
+    def is_integer(self) -> bool:
+        """Check if the current value is integer.
+        
+        Returns:
+            bool: True if the current value is integer, False otherwise.
+        """
+        ...
+
+    def is_even(self) -> bool:
+        """Check if the current value is even.
+
+        Returns:
+            bool: True if the current value is even, False otherwise.
+        """
+        ...
+
+    def is_odd(self) -> bool:
+        """Check if the current value is odd.
+
+        Returns:
+            bool: True if the current value is odd, False otherwise.
+        """
+        ...
+
+    def sin(self) -> Crabnum:
+        """Get the sine of the current value.
+
+        Returns:
+            Crabnum: New instance with result 
+        """
+        ...
+
+    def csc(self) -> Crabnum:
+        """Get the cosecant of the current value.
+
+        Returns:
+            Crabnum: New instance with result
+        """
+        ...
+    
+    def cos(self) -> Crabnum:
+        """Get the cosine of the current value.
+
+        Returns:
+            Crabnum: New instance with result
+        """
+        ...
+
+    def sec(self) -> Crabnum:
+        """Get the secant of the current value.
+
+        Returns:
+            Crabnum: New instance with result
+        """
+        ...
+
+    def tan(self) -> Crabnum:
+        """Get the tangent of the current value.
+
+        Returns:
+            Crabnum: New instance with result
+        """
+        ...
+
+    def cot(self) -> Crabnum:
+        """Get the cotangent of the current value.
+
+        Returns:
+            Crabnum: New instance with result
+        """
+        ...
+
+    def fibonacci(self) -> List[int]:
+        """Generate the Fibonacci sequence up to the current value.
+
+        Returns:
+            List[int]: A list of Fibonacci numbers up to the current value.
+        """
+        ...
+
+    def absolute(self) -> Crabnum:
+        """Get the absolute value of the current value.
+
+        Returns:
+            Crabnum: New instance with result
+        """
+        ...
+
+    def log(selff, base: float) -> Crabnum:
+        """Compute the logarithm of the current value using the given base.
+
+        Args:
+            base (float): The base of the logarithm. Must be > 0 and != 1.
+        
+        Returns:
+            Crabnum: The logarithm of the current value with the specified base.
+        """
+        ...
+
+
+
+
 
 
