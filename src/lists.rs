@@ -1,6 +1,7 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 use crate::functions::*;
+use crate::arithmetic::*;
 use pyo3::prelude::*;
 use std::collections::HashSet;
 

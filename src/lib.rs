@@ -2,44 +2,63 @@ use pyo3::prelude::*;
 
 mod class;
 mod functions;
+mod arithmetic;
+mod powers;
+mod number_theory;
+mod rounding;
+mod checks;
+mod trigonometry;
+mod advanced;
 mod lists;
 
 #[pymodule]
 fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    // functions
-    m.add_function(wrap_pyfunction!(functions::sum_of, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::dif_of, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::div_of, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::int_div_of, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::rem, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::product, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::square, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::cube, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::power, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::square_root, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::cube_root, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::root, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::factorial, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::gcd, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::lcm, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::floor, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::ceil, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::is_positive, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::is_negative, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::sign, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::is_integer, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::is_even, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::is_odd, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::sin, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::csc, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::sec, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::cos, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::tan, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::cot, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::fibonacci, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::absolute, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::log, m)?)?;
-    m.add_function(wrap_pyfunction!(functions::tetration, m)?)?;
+    // arithmetic.rs
+    m.add_function(wrap_pyfunction!(arithmetic::sum_of, m)?)?;
+    m.add_function(wrap_pyfunction!(arithmetic::dif_of, m)?)?;
+    m.add_function(wrap_pyfunction!(arithmetic::div_of, m)?)?;
+    m.add_function(wrap_pyfunction!(arithmetic::int_div_of, m)?)?;
+    m.add_function(wrap_pyfunction!(arithmetic::rem, m)?)?;
+    m.add_function(wrap_pyfunction!(arithmetic::product, m)?)?;
+
+    // powers.rs
+    m.add_function(wrap_pyfunction!(powers::square, m)?)?;
+    m.add_function(wrap_pyfunction!(powers::cube, m)?)?;
+    m.add_function(wrap_pyfunction!(powers::power, m)?)?;
+    m.add_function(wrap_pyfunction!(powers::square_root, m)?)?;
+    m.add_function(wrap_pyfunction!(powers::cube_root, m)?)?;
+    m.add_function(wrap_pyfunction!(powers::root, m)?)?;
+
+    // number_theory.rs
+    m.add_function(wrap_pyfunction!(number_theory::factorial, m)?)?;
+    m.add_function(wrap_pyfunction!(number_theory::gcd, m)?)?;
+    m.add_function(wrap_pyfunction!(number_theory::lcm, m)?)?;
+    m.add_function(wrap_pyfunction!(number_theory::fibonacci, m)?)?;
+
+    // rounding.rs
+    m.add_function(wrap_pyfunction!(rounding::floor, m)?)?;
+    m.add_function(wrap_pyfunction!(rounding::ceil, m)?)?;
+    m.add_function(wrap_pyfunction!(rounding::absolute, m)?)?;
+
+    // checks.rs
+    m.add_function(wrap_pyfunction!(checks::is_positive, m)?)?;
+    m.add_function(wrap_pyfunction!(checks::is_negative, m)?)?;
+    m.add_function(wrap_pyfunction!(checks::sign, m)?)?;
+    m.add_function(wrap_pyfunction!(checks::is_integer, m)?)?;
+    m.add_function(wrap_pyfunction!(checks::is_even, m)?)?;
+    m.add_function(wrap_pyfunction!(checks::is_odd, m)?)?;
+
+    // trigonometry.rs
+    m.add_function(wrap_pyfunction!(trigonometry::sin, m)?)?;
+    m.add_function(wrap_pyfunction!(trigonometry::csc, m)?)?;
+    m.add_function(wrap_pyfunction!(trigonometry::sec, m)?)?;
+    m.add_function(wrap_pyfunction!(trigonometry::cos, m)?)?;
+    m.add_function(wrap_pyfunction!(trigonometry::tan, m)?)?;
+    m.add_function(wrap_pyfunction!(trigonometry::cot, m)?)?;
+
+    // advanced.rs
+    m.add_function(wrap_pyfunction!(advanced::log, m)?)?;
+    m.add_function(wrap_pyfunction!(advanced::tetration, m)?)?;
 
     // class
     m.add_class::<class::Crabnum>()?;

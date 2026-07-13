@@ -13,6 +13,6 @@ name = "crabnum"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.22.0", features = ["extension-module", "num-bigint"] }
+pyo3 = { version = "0.22.0", features = ["extension-module", "num-bigint", "rust_decimal"] }
 num-bigint = "0.4"
 num-traits = "0.2"

@@ -5,6 +5,15 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 use crate::functions::*;
+use crate::arithmetic::*;
+use crate::powers::*;
+use crate::number_theory::*;
+use crate::rounding::*;
+use crate::checks::*;
+use crate::trigonometry::*;
+use crate::advanced::*;
+
+
 use num_bigint::{BigInt, BigUint};
 use num_traits::{FromPrimitive, ToPrimitive, Zero};
 use pyo3::exceptions::{PyValueError, PyZeroDivisionError};

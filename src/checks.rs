@@ -1,0 +1,118 @@
+#![allow(unsafe_op_in_unsafe_fn)]
+
+use pyo3::prelude::*;
+use crate::functions::*;
+
+#[pyfunction]
+/// Returns `true` if `number` is positive.
+/// ### Arguments
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_positive(-6)) # it will print False
+/// ```
+/// ```python
+/// print(is_positive(0)) # it will print False
+/// ```
+/// ```python
+/// print(is_positive(11)) # it will print True
+/// ```
+pub fn is_positive(number: f64) -> PyResult<bool> {
+    check_is_finite(number)?;
+    Ok(number > 0.0)
+}
+
+#[pyfunction]
+/// Returns `true` if `number` is negative.
+/// ### Arguments
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_negative(99)) # it will print False
+/// ```
+/// ```python
+/// print(is_negative(-1798)) # it will print True
+/// ```
+/// ```python
+/// print(is_negative(0)) # it will print False
+/// ```
+pub fn is_negative(number: f64) -> PyResult<bool> {
+    check_is_finite(number)?;
+    Ok(number < 0.0)
+}
+
+#[pyfunction]
+/// ### Returns <br>
+/// `-1` if `number` is negative,<br>
+/// `0` if `number` is zero, <br>
+/// `1` if `number` is positive.
+/// ### Arguments
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(sign(0)) # it will print 0
+/// ```
+/// ```python
+/// print(sign(543)) # it will print 1
+/// ```
+/// ```python
+/// print(sign(-14)) # it will print -1
+/// ```
+pub fn sign(number: f64) -> PyResult<i8> {
+    check_is_finite(number)?;
+    if number > 0.0 {
+        Ok(1)
+    } else if number < 0.0 {
+        Ok(-1)
+    } else {
+        Ok(0)
+    }
+}
+
+#[pyfunction]
+/// Returns `true` if `number` is integer.
+/// ### Arguments
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_integer(8)) # it will print True
+/// ```
+/// ```python
+/// print(is_integer(6.5)) # it will print False
+/// ```
+pub fn is_integer(number: f64) -> PyResult<bool> {
+    check_is_finite(number)?;
+    Ok(number.fract() == 0.0)
+}
+
+#[pyfunction]
+/// ### Returns
+/// `true` if `number` is even, <br>
+/// `false` if number isn't even.
+/// ### Arguments
+/// `number` - an integer number
+/// ### Examples
+/// ```python
+/// print(is_even(22)) # it will print True
+/// ```
+/// ```python
+/// print(is_even(21)) # it will print False
+/// ```
+pub fn is_even(number: i64) -> PyResult<bool> {
+    Ok(number % 2 == 0)
+}
+
+#[pyfunction]
+/// Returns `true` if number is odd.
+/// ### Arguments
+/// `number` - a float number
+/// ### Examples
+/// ```python
+/// print(is_odd(7892)) # it will print False
+/// ```
+/// ```python
+/// print(is_odd(-73)) # it will print True
+/// ```
+pub fn is_odd(number: i64) -> PyResult<bool> {
+    Ok(number % 2 != 0)
+}
