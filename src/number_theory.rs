@@ -8,7 +8,6 @@ use std::mem::replace;
 
 use crate::functions::*;
 
-
 #[pyfunction]
 /// Returns the factorial of `number`.
 /// ### Arguments

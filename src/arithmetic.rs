@@ -1,13 +1,15 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use pyo3::exceptions::PyValueError;
-use pyo3::prelude::*;
 use crate::functions::*;
+use pyo3::exceptions::PyValueError;
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
+use pyo3::prelude::*;
 
 #[pyfunction]
 /// Returns the sum of the numbers in the list.
 /// ## Arguments
-/// `args` - the list with float numbers
+/// `args` - the list with numbers
 /// ## Examples
 /// ```python
 /// print(sum_of([5, 2)])
@@ -17,15 +19,15 @@ use crate::functions::*;
 /// print(sum_of([1001 - 1, 5]))
 /// # It will print 1005 (1000 - 1 + 5 = 1005)
 /// ```
-pub fn sum_of(args: Vec<f64>) -> PyResult<f64> {
+pub fn sum_of(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
-    check_is_finite(args.iter().sum())
+    Ok(args.iter().sum())
 }
 
 #[pyfunction]
 /// Returns the difference between the first number and the sum of the other numbers in the list.
 /// ### Arguments
-/// `args` - list with float numbers
+/// `args` - list with numbers
 /// ### Examples
 /// ```python
 /// print(dif_of([1, 2, 3])) # it will print -4.0 (1 - (2 + 3) = -4)
@@ -33,15 +35,15 @@ pub fn sum_of(args: Vec<f64>) -> PyResult<f64> {
 /// ```python
 /// print(dif_of([100, 24, 3])) # it will print 73.0 (100 - (24 + 3) = 73)
 /// ```
-pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
+pub fn dif_of(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
-    check_is_finite(args[0] - args[1..].iter().sum::<f64>())
+    Ok(args[0] - args[1..].iter().sum::<Decimal>())
 }
 
 #[pyfunction]
 /// Returns the result of consecutive division of the numbers in the list.
 /// ### Arguments
-/// `args` - a list with float numbers
+/// `args` - a list with numbers
 /// ### Examples
 /// ```python
 /// # 1
@@ -51,12 +53,12 @@ pub fn dif_of(args: Vec<f64>) -> PyResult<f64> {
 /// # 2
 /// print(div_of([993093, 33434, 4])) # it will print 7.425771669557935
 /// ```
-pub fn div_of(args: Vec<f64>) -> PyResult<f64> {
+pub fn div_of(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
-    if args[1..].iter().any(|&x| x == 0.0) {
+    if args[1..].iter().any(|&x| x == dec!(0.0)) {
         return Err(PyValueError::new_err("Division by zero!"));
     }
-    check_is_finite(args[1..].iter().fold(args[0], |acc, &x| acc / x))
+    Ok(args[1..].iter().fold(args[0], |acc, &x| acc / x))
 }
 
 #[pyfunction]
@@ -92,16 +94,14 @@ pub fn int_div_of(args: Vec<i64>) -> PyResult<i64> {
 /// ```python
 /// print(rem(100, 6)) # it will print 4.0
 /// ```
-pub fn rem(a: f64, b: f64) -> PyResult<f64> {
-    check_is_finite(a)?;
-    check_is_finite(b)?;
+pub fn rem(a: Decimal, b: Decimal) -> PyResult<Decimal> {
     Ok(a % b)
 }
 
 #[pyfunction]
 /// Returns the product between all numbers in a list.
 /// ### Arguments
-/// `args` - list with float numbers
+/// `args` - list with numbers
 /// ### Examples
 /// ```python
 /// print(product([10, 10])) # it will print 100.0
@@ -109,7 +109,7 @@ pub fn rem(a: f64, b: f64) -> PyResult<f64> {
 /// ```python
 /// print(product([3, 9, 17])) # it will print 459.0
 /// ```
-pub fn product(args: Vec<f64>) -> PyResult<f64> {
+pub fn product(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
-    check_is_finite(args.iter().product::<f64>())
+    Ok(args.iter().product::<Decimal>())
 }

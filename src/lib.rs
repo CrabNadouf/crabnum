@@ -1,15 +1,15 @@
 use pyo3::prelude::*;
 
+mod advanced;
+mod arithmetic;
+mod checks;
 mod class;
 mod functions;
-mod arithmetic;
-mod powers;
-mod number_theory;
-mod rounding;
-mod checks;
-mod trigonometry;
-mod advanced;
 mod lists;
+mod number_theory;
+mod powers;
+mod rounding;
+mod trigonometry;
 
 #[pymodule]
 fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {

@@ -1,27 +1,25 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use num_bigint::{BigInt};
+use crate::functions::*;
+use rust_decimal::{Decimal, MathematicalOps};
+use num_bigint::BigInt;
 use num_traits::{FromPrimitive, One};
 use pyo3::prelude::*;
-use crate::functions::*;
-
 
 #[pyfunction]
 /// Returns the logarithm of`number` to `base`.
 /// ### Arguments
-/// `base` - a float number<br>
-/// `number` - a float number
+/// `base` - a number<br>
+/// `number` - a number
 /// ### Examples
 /// ```python
-/// print(log(10, 100)) # it will print 2.0
+/// print(log(100, 10)) # it will print 2.0
 /// ```
 /// ```python
-/// print(log(2, 8)) # it will print 3.0
+/// print(log(8, 2)) # it will print 3.0
 /// ```
-pub fn log(base: f64, number: f64) -> PyResult<f64> {
-    check_is_finite(base)?;
-    check_is_finite(number)?;
-    Ok(number.log(base))
+pub fn log(number: Decimal, base: Decimal) -> PyResult<Decimal> {
+    Ok(number.ln() / base.ln())
 }
 
 #[pyfunction]

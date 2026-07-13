@@ -1,6 +1,6 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use num_bigint::{BigInt};
+use num_bigint::BigInt;
 use num_traits::{One, ToPrimitive, Zero};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -49,4 +49,3 @@ pub(crate) fn pow_bigint(base: &BigInt, exponent: &BigInt) -> BigInt {
     }
     result
 }
-

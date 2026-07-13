@@ -4,16 +4,18 @@
 #![allow(unused_imports)]
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use crate::functions::*;
-use crate::arithmetic::*;
-use crate::powers::*;
-use crate::number_theory::*;
-use crate::rounding::*;
-use crate::checks::*;
-use crate::trigonometry::*;
 use crate::advanced::*;
+use crate::arithmetic::*;
+use crate::checks::*;
+use crate::functions::*;
+use crate::number_theory::*;
+use crate::powers::*;
+use crate::rounding::*;
+use crate::trigonometry::*;
 
 
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 use num_bigint::{BigInt, BigUint};
 use num_traits::{FromPrimitive, ToPrimitive, Zero};
 use pyo3::exceptions::{PyValueError, PyZeroDivisionError};
@@ -22,13 +24,13 @@ use pyo3::types::PyTuple;
 
 #[pyclass]
 pub struct Crabnum {
-    number: f64,
+    number: Decimal,
 }
 
 #[pymethods]
 impl Crabnum {
     #[new]
-    pub fn new(number: f64) -> Self {
+    pub fn new(number: Decimal) -> Self {
         Self { number }
     }
 
@@ -40,21 +42,21 @@ impl Crabnum {
         Ok(format!("Crabnum({})", self.number))
     }
 
-    pub fn sum_of(&self, args: Vec<f64>) -> PyResult<Self> {
+    pub fn sum_of(&self, args: Vec<Decimal>) -> PyResult<Self> {
         Ok(Self {
             number: self.number + sum_of(args)?,
         })
     }
 
-    pub fn dif_of(&self, args: Vec<f64>) -> PyResult<Self> {
+    pub fn dif_of(&self, args: Vec<Decimal>) -> PyResult<Self> {
         Ok(Self {
             number: self.number - sum_of(args)?,
         })
     }
 
-    pub fn div_of(&self, args: Vec<f64>) -> PyResult<Self> {
-        let result: f64 = product(args)?;
-        if result == 0.0 {
+    pub fn div_of(&self, args: Vec<Decimal>) -> PyResult<Self> {
+        let result = product(args)?;
+        if result == dec!(0.0) {
             return Err(PyValueError::new_err("Can't divide by zero!"));
         }
         Ok(Self {
@@ -62,24 +64,13 @@ impl Crabnum {
         })
     }
 
-    #[pyo3(signature = (*args))]
-    pub fn int_div_of(&self, args: Vec<f64>) -> PyResult<Self> {
-        let res = product(args)?;
-        if res == 0.0 {
-            return Err(PyValueError::new_err("Can't divide by zero!"));
-        }
-        Ok(Self {
-            number: (self.number as i64 / res as i64) as f64,
-        })
-    }
-
-    pub fn rem(&self, b: f64) -> PyResult<Self> {
+    pub fn rem(&self, b: Decimal) -> PyResult<Self> {
         Ok(Self {
             number: rem(self.number, b)?,
         })
     }
 
-    pub fn product(&self, args: Vec<f64>) -> PyResult<Self> {
+    pub fn product(&self, args: Vec<Decimal>) -> PyResult<Self> {
         Ok(Self {
             number: self.number * product(args)?,
         })
@@ -97,7 +88,7 @@ impl Crabnum {
         })
     }
 
-    pub fn power(&self, exp: f64) -> PyResult<Self> {
+    pub fn power(&self, exp: Decimal) -> PyResult<Self> {
         Ok(Self {
             number: power(self.number, exp)?,
         })
@@ -115,47 +106,81 @@ impl Crabnum {
         })
     }
 
-    pub fn root(&self, power: f64) -> PyResult<Self> {
+    pub fn root(&self, power: Decimal) -> PyResult<Self> {
         Ok(Self {
             number: root(self.number, power)?,
         })
     }
 
-    pub fn factorial(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: factorial(BigInt::from(self.number.round() as u64))?
-                .to_f64()
-                .ok_or_else(|| PyValueError::new_err("Result is too large to fit in f64"))?,
-        })
+    pub fn factorial(&self) -> PyResult<BigInt> {
+        let n = self
+            .number
+            .round()
+            .to_u64()
+            .ok_or_else(|| PyValueError::new_err("Number must be a non-negative integer"))?;
+        
+        factorial(BigInt::from(n))
     }
 
-    pub fn gcd(&self, args: Vec<BigInt>) -> PyResult<Self> {
-        if !is_integer(self.number)? {
+    pub fn gcd(&self, args: Vec<Decimal>) -> PyResult<Self> {
+        if self.number.fract() != dec!(0) {
             return Err(PyValueError::new_err("Number must be an integer for GCD"));
         }
-        let first = BigInt::from(self.number as i64);
-        let mut arguments = vec![first];
-        for i in args {
-            arguments.push(i);
+        
+        let first = self
+            .number
+            .to_i64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for GCD"))?;
+        
+        let mut arguments = vec![BigInt::from(first)];
+        
+        for arg in args {
+            if arg.fract() != Decimal::ZERO {
+                return Err(PyValueError::new_err("All arguments must be integers for GCD"));
+            }
+            let int_arg = arg
+                .to_i64()
+                .ok_or_else(|| PyValueError::new_err("Argument is too large for GCD"))?;
+            arguments.push(BigInt::from(int_arg));
         }
-        Ok(Self {
-            number: gcd(arguments)?.to_f64().unwrap_or(f64::NAN),
-        })
+        
+        
+        let decimal_result = gcd(arguments)?
+            .to_i64()
+            .map(Decimal::from)
+            .ok_or_else(|| PyValueError::new_err("GCD result is too large for Decimal"))?;
+        
+        Ok(Self { number: decimal_result })
     }
 
-    pub fn lcm(&self, args: Vec<f64>) -> PyResult<Self> {
-        if !is_integer(self.number)? {
+    pub fn lcm(&self, args: Vec<Decimal>) -> PyResult<Self> {
+        if self.number.fract() != Decimal::ZERO {
             return Err(PyValueError::new_err("Number must be an integer for LCM"));
         }
-        let first = BigInt::from(self.number as i64);
-        let mut arguments = vec![first];
-        for i in args {
-            let val = BigInt::from(i as i64);
-            arguments.push(val);
+        
+        let first = self
+            .number
+            .to_i64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for LCM"))?;
+        
+        let mut arguments = vec![BigInt::from(first)];
+        
+        for arg in args {
+            if arg.fract() != Decimal::ZERO {
+                return Err(PyValueError::new_err("All arguments must be integers for LCM"));
+            }
+            let int_arg = arg
+                .to_i64()
+                .ok_or_else(|| PyValueError::new_err("Argument is too large for LCM"))?;
+            arguments.push(BigInt::from(int_arg));
         }
-        Ok(Self {
-            number: lcm(arguments)?.to_f64().unwrap_or(f64::NAN),
-        })
+        
+        let decimal_result = lcm(arguments)?
+            .to_i64()
+            .map(Decimal::from)
+            .ok_or_else(|| PyValueError::new_err("LCM result is too large for Decimal"))?;
+        
+        Ok(Self { number: decimal_result })
     }
 
     pub fn floor(&self) -> PyResult<Self> {
@@ -187,57 +212,103 @@ impl Crabnum {
     }
 
     pub fn is_even(&self) -> PyResult<bool> {
-        match is_integer(self.number)? {
-            true => Ok(is_even(self.number as i64)?),
-            false => Err(PyValueError::new_err("Number must be integer.")),
+        if self.number.fract() != Decimal::ZERO {
+            return Err(PyValueError::new_err("Number must be an integer"));
         }
+        
+        let n = self
+            .number
+            .to_i64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for even check"))?;
+        
+        Ok(n % 2 == 0)  
     }
 
     pub fn is_odd(&self) -> PyResult<bool> {
-        match is_integer(self.number)? {
-            true => Ok(is_odd(self.number as i64)?),
-            false => Err(PyValueError::new_err("Number must be integer.")),
+        if self.number.fract() != Decimal::ZERO {
+            return Err(PyValueError::new_err("Number must be an integer"));
         }
+        
+        let n = self
+            .number
+            .to_i64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for odd check"))?;
+        
+        Ok(n % 2 != 0)
     }
 
     pub fn sin(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: sin(self.number)?,
-        })
+        let num = self
+            .number
+            .to_f64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for trigonometric function"))?;
+        
+        Ok(Self { number: Decimal::from_f64(num.sin())
+            .ok_or_else(|| PyValueError::new_err("Result is out of Decimal range"))? })
     }
 
     pub fn csc(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: csc(self.number)?,
-        })
+        let num = self
+            .number
+            .to_f64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for trigonometric function"))?;
+        
+        Ok(Self { number: Decimal::from_f64(csc(num)?)
+            .ok_or_else(|| PyValueError::new_err("Result is out of Decimal range"))? })
     }
 
     pub fn cos(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: cos(self.number)?,
-        })
+        let num = self
+            .number
+            .to_f64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for trigonometric function"))?;
+        
+        Ok(Self { number: Decimal::from_f64(num.cos())
+            .ok_or_else(|| PyValueError::new_err("Result is out of Decimal range"))? })
     }
 
     pub fn sec(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: sec(self.number)?,
-        })
+        let num = self
+            .number
+            .to_f64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for trigonometric function"))?;
+        
+        Ok(Self { number: Decimal::from_f64(sec(num)?)
+            .ok_or_else(|| PyValueError::new_err("Result is out of Decimal range"))? })
     }
 
     pub fn tan(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: tan(self.number)?,
-        })
+        let num = self
+            .number
+            .to_f64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for trigonometric function"))?;
+        
+        Ok(Self { number: Decimal::from_f64(num.tan())
+            .ok_or_else(|| PyValueError::new_err("Result is out of Decimal range"))? })
     }
 
     pub fn cot(&self) -> PyResult<Self> {
-        Ok(Self {
-            number: cot(self.number)?,
-        })
+        let num = self
+            .number
+            .to_f64()
+            .ok_or_else(|| PyValueError::new_err("Number is too large for trigonometric function"))?;
+        
+        Ok(Self { number: Decimal::from_f64(cot(num)?)
+            .ok_or_else(|| PyValueError::new_err("Result is out of Decimal range"))? })
     }
 
     pub fn fibonacci(&self) -> PyResult<Vec<BigUint>> {
-        Ok(fibonacci(self.number as usize)?)
+        if self.number.fract() != Decimal::ZERO {
+            return Err(PyValueError::new_err("Number must be an integer"));
+        }
+    
+        if self.number < Decimal::ZERO {
+            return Err(PyValueError::new_err("Number cannot be negative"));
+        }
+
+        let n = self.number.to_usize().ok_or_else(|| PyValueError::new_err("Number is too large for fibonacci"))?;
+    
+        Ok(fibonacci(n)?)
     }
 
     pub fn absolute(&self) -> PyResult<Self> {
@@ -246,9 +317,9 @@ impl Crabnum {
         })
     }
 
-    pub fn log(&self, base: f64) -> PyResult<Self> {
+    pub fn log(&self, base: Decimal) -> PyResult<Self> {
         Ok(Self {
-            number: log(base, self.number)?,
+            number: log(self.number, base)?,
         })
     }
 }

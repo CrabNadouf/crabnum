@@ -1,7 +1,7 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use pyo3::prelude::*;
 use crate::functions::*;
+use pyo3::prelude::*;
 
 #[pyfunction]
 /// Returns the sine of `number` (in radians).
