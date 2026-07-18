@@ -60,16 +60,16 @@ pub fn power(number: Decimal, exp: Decimal) -> PyResult<Decimal> {
 /// `number` - a number
 /// ### Examples
 /// ```python
-/// print(square_root(25)) # it will print 5.0
+/// print(square_root(25)) # it will print 5
 /// ```
 /// ```python
-/// print(square_root(64)) # it will print 8.0
+/// print(square_root(64)) # it will print 8
 /// ```
 pub fn square_root(number: Decimal) -> PyResult<Decimal> {
     if number < dec!(0.0) {
         return Err(PyValueError::new_err("Number cant be negative."));
     }
-    Ok(number.sqrt().unwrap())
+    Ok(number.sqrt().unwrap().round_dp(12).normalize())
 }
 
 #[pyfunction]
@@ -81,13 +81,13 @@ pub fn square_root(number: Decimal) -> PyResult<Decimal> {
 /// print(cube_root(8)) # it will print 2.0
 /// ```
 /// ```python
-/// print(cube_root(1331)) # it will print 11.0
+/// print(cube_root(1331)) # it will print 11
 /// ```
 /// ```python
-/// print(cube_root(343)) # it will print 7.0
+/// print(cube_root(343)) # it will print 7
 /// ```
 pub fn cube_root(number: Decimal) -> PyResult<Decimal> {
-    Ok(number.powd(dec!(1)/dec!(3)))
+    Ok(number.powd(dec!(1)/dec!(3)).round_dp(12).normalize())
 }
 
 #[pyfunction]
@@ -97,15 +97,15 @@ pub fn cube_root(number: Decimal) -> PyResult<Decimal> {
 /// `power` - a number
 /// ### Examples
 /// ```python
-/// print(root(1331, 3)) # it will print 11.0
+/// print(root(1331, 3)) # it will print 11
 /// ```
 /// ```python
-/// print(root(6561, 4)) # it will print 9.0
+/// print(root(6561, 4)) # it will print 9
 /// ```
 pub fn root(number: Decimal, power: Decimal) -> PyResult<Decimal> {
     if power <= dec!(0.0) {
         return Err(PyValueError::new_err("Power cant be negative."));
     }
     let total_power = dec!(1.0) / power;
-    Ok(number.powd(total_power).round_dp(12))
+    Ok(number.powd(total_power).round_dp(12).normalize())
 }

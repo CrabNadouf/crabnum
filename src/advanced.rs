@@ -13,13 +13,13 @@ use pyo3::prelude::*;
 /// `number` - a number
 /// ### Examples
 /// ```python
-/// print(log(100, 10)) # it will print 2.0
+/// print(log(100, 10)) # it will print 2
 /// ```
 /// ```python
-/// print(log(8, 2)) # it will print 3.0
+/// print(log(8, 2)) # it will print 3
 /// ```
 pub fn log(number: Decimal, base: Decimal) -> PyResult<Decimal> {
-    Ok(number.ln() / base.ln())
+    Ok((number.ln() / base.ln()).round_dp(12).normalize())
 }
 
 #[pyfunction]
