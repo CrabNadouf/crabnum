@@ -22,9 +22,10 @@ use pyo3::exceptions::{PyValueError, PyZeroDivisionError};
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
 
-#[pyclass]
+#[pyclass(from_py_object)]
+#[derive(Clone)]
 pub struct Crabnum {
-    number: Decimal,
+    pub number: Decimal,
 }
 
 #[pymethods]
@@ -40,6 +41,20 @@ impl Crabnum {
 
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("Crabnum({})", self.number))
+    }
+
+    fn __eq__(&self, other: &Bound<'_, PyAny>) -> PyResult<bool> {
+        if let Ok(other_crab) = other.extract::<Self>() {
+            return Ok(self.number == other_crab.number);
+        }
+        
+        if let Ok(other_str) = other.extract::<String>() {
+            if let Ok(other_dec) = other_str.parse::<Decimal>() {
+                return Ok(self.number == other_dec);
+            }
+        }
+
+        Ok(false)
     }
 
     pub fn sum_of(&self, args: Vec<Decimal>) -> PyResult<Self> {
