@@ -48,8 +48,8 @@ pub fn cube(number: Decimal) -> PyResult<Decimal> {
 /// print(power(7, 3)) # it will print 343.0
 /// ```
 pub fn power(number: Decimal, exp: Decimal) -> PyResult<Decimal> {
-    if exp == dec!(0.0) {
-        return Ok(dec!(1.0));
+    if exp == dec!(0) {
+        return Ok(dec!(1));
     }
     Ok(number.powd(exp))
 }

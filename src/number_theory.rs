@@ -107,8 +107,6 @@ pub fn lcm(args: Vec<BigInt>) -> PyResult<BigInt> {
 /// ```python
 /// print(fibonacci(4)) # it will print [0, 1, 1, 2]
 /// ```
-/// ### Warning!
-/// The specified range must not exceed 91!
 pub fn fibonacci(n: usize) -> PyResult<Vec<BigUint>> {
     let mut result = vec![];
     let mut f0: BigUint = Zero::zero();

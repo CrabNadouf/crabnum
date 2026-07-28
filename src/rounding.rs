@@ -1,7 +1,6 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 use num_traits::ToPrimitive;
 use pyo3::prelude::*;
 use pyo3::exceptions::PyValueError;
@@ -49,9 +48,5 @@ pub fn ceil(number: Decimal) -> PyResult<i64> {
 /// print(absolute(3)) # it will print 3.0
 /// ```
 pub fn absolute(number: Decimal) -> PyResult<Decimal> {
-    if number > dec!(0) {
-        Ok(number)
-    } else {
-        Ok(-number)
-    }
+    Ok(number.abs())
 }
