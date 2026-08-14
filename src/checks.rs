@@ -10,12 +10,13 @@ use pyo3::prelude::*;
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(is_positive(-6)) # it will print False
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(is_positive(0)) # it will print False
-/// ```
-/// ```python
+/// 
+/// # 3
 /// print(is_positive(11)) # it will print True
 /// ```
 pub fn is_positive(number: Decimal) -> PyResult<bool> {
@@ -28,12 +29,13 @@ pub fn is_positive(number: Decimal) -> PyResult<bool> {
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(is_negative(99)) # it will print False
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(is_negative(-1798)) # it will print True
-/// ```
-/// ```python
+/// 
+/// # 3
 /// print(is_negative(0)) # it will print False
 /// ```
 pub fn is_negative(number: Decimal) -> PyResult<bool> {
@@ -41,20 +43,23 @@ pub fn is_negative(number: Decimal) -> PyResult<bool> {
 }
 
 #[pyfunction]
-/// ### Returns <br>
-/// `-1` if `number` is negative,<br>
-/// `0` if `number` is zero, <br>
+/// ### Returns
+/// `-1` if `number` is negative,
+/// 
+/// `0` if `number` is zero, 
+/// 
 /// `1` if `number` is positive.
 /// ### Arguments
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(sign(0)) # it will print 0
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(sign(543)) # it will print 1
-/// ```
-/// ```python
+/// 
+/// # 3
 /// print(sign(-14)) # it will print -1
 /// ```
 pub fn sign(number: Decimal) -> PyResult<i8> {
@@ -73,9 +78,10 @@ pub fn sign(number: Decimal) -> PyResult<i8> {
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(is_integer(8)) # it will print True
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(is_integer(6.5)) # it will print False
 /// ```
 pub fn is_integer(number: Decimal) -> PyResult<bool> {
@@ -90,9 +96,10 @@ pub fn is_integer(number: Decimal) -> PyResult<bool> {
 /// `number` - an integer number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(is_even(22)) # it will print True
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(is_even(21)) # it will print False
 /// ```
 pub fn is_even(number: i64) -> PyResult<bool> {
@@ -105,9 +112,10 @@ pub fn is_even(number: i64) -> PyResult<bool> {
 /// `number` - an integer number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(is_odd(7892)) # it will print False
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(is_odd(-73)) # it will print True
 /// ```
 pub fn is_odd(number: i64) -> PyResult<bool> {

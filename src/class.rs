@@ -56,7 +56,7 @@ impl Crabnum {
 
         Ok(false)
     }
-
+    
     pub fn sum_of(&self, args: Vec<Decimal>) -> PyResult<Self> {
         Ok(Self {
             number: self.number + sum_of(args)?,

@@ -9,17 +9,18 @@ use std::collections::HashSet;
 
 #[pyfunction]
 /// Returns the arithmetic mean of the `a`.
-/// ## Arguments
+/// ### Arguments
 /// `args` - a list with numbers
-/// ## Examples
+/// ### Examples
 /// ```python
-/// print(mean([1, 2, 3, 4, 5])) # it will print 3.0
-/// ```
-/// ```python
+/// # 1
+/// print(mean([1, 2, 3, 4, 5])) # it will print 3
+/// 
+/// # 2
 /// print(mean([3, 6, 9, 12, 15, 55])) # it will print 16.666666666666668
-/// ```
-/// ```python
-/// print(mean([1])) # it will print 1.0
+/// 
+/// # 3
+/// print(mean([1])) # it will print 1
 /// ```
 pub fn mean(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
@@ -30,14 +31,15 @@ pub fn mean(args: Vec<Decimal>) -> PyResult<Decimal> {
 
 #[pyfunction]
 /// Returns the maximum value in the list.
-/// ## Arguments
+/// ### Arguments
 /// `args` - a list with numbers
-/// ## Examples
+/// ### Examples
 /// ```python
-/// print(max_value([1, 5, 7, 1, 3])) # it will print 7.0
-/// ```
-/// ```python
-/// print(max_value([0, -2, 4, 1, -7])) # it will print 4.0
+/// # 1
+/// print(max_value([1, 5, 7, 1, 3])) # it will print 7
+/// 
+/// # 2
+/// print(max_value([0, -2, 4, 1, -7])) # it will print 4
 /// ```
 pub fn max_value(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
@@ -52,13 +54,14 @@ pub fn max_value(args: Vec<Decimal>) -> PyResult<Decimal> {
 
 #[pyfunction]
 /// Returns the index of maximum value in the list.
-/// ## Arguments
+/// ### Arguments
 /// `args` - a list with numbers
-/// ## Examples
+/// ### Examples
 /// ```python
+/// # 1
 /// print(max_index([1, 2, 3, 5, 4])) # it will print 3
-/// ```
-/// ```python
+/// 
+/// # 2 
 /// print(max_index([-1, -2, 0, -5, -7])) # it will print 2
 /// ```
 pub fn max_index(args: Vec<Decimal>) -> PyResult<usize> {
@@ -74,14 +77,15 @@ pub fn max_index(args: Vec<Decimal>) -> PyResult<usize> {
 
 #[pyfunction]
 /// Returns the minimum value in the list.
-/// ## Arguments
+/// ### Arguments
 /// `args` - a list with numbers
-/// ## Examples
+/// ### Examples
 /// ```python
-/// print(min_value([-1, -2, 0, -5, -7])) # it will print -7.0
-/// ```
-/// ```python
-/// print(min_value([123, 54, 3242, 2, 434, 0, -3, 322])) # it will print -3.0
+/// # 1
+/// print(min_value([-1, -2, 0, -5, -7])) # it will print -7
+/// 
+/// # 2
+/// print(min_value([123, 54, 3242, 2, 434, 0, -3, 322])) # it will print -3
 /// ```
 pub fn min_value(args: Vec<Decimal>) -> PyResult<Decimal> {
     empty(&args)?;
@@ -96,9 +100,9 @@ pub fn min_value(args: Vec<Decimal>) -> PyResult<Decimal> {
 
 #[pyfunction]
 /// Returns the index of minimum value in the list.
-/// ## Arguments
+/// ### Arguments
 /// `args` - a list with numbers
-/// ## Examples
+/// ### Examples
 /// ```python
 /// print(min_index([123, 54, -2, 2, 434, 0, -3])) # it will print 6
 /// ```
@@ -116,7 +120,7 @@ pub fn min_index(args: Vec<Decimal>) -> PyResult<usize> {
     Ok(smallest)
 }
 
-#[pyfunction]
+#[pyfunction] 
 pub fn sorted_list(mut args: Vec<Decimal>) -> PyResult<Vec<Decimal>> {
     empty(&args)?;
     args.sort();
