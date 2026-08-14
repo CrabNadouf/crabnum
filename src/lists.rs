@@ -1,8 +1,5 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
-use crate::arithmetic::*;
 use crate::functions::*;
 use pyo3::prelude::*;
 use std::collections::HashSet;
@@ -14,19 +11,19 @@ use std::collections::HashSet;
 /// ### Examples
 /// ```python
 /// # 1
-/// print(mean([1, 2, 3, 4, 5])) # it will print 3
+/// 
 /// 
 /// # 2
-/// print(mean([3, 6, 9, 12, 15, 55])) # it will print 16.666666666666668
+/// 
 /// 
 /// # 3
-/// print(mean([1])) # it will print 1
+///
 /// ```
-pub fn mean(args: Vec<Decimal>) -> PyResult<Decimal> {
+pub fn mean(args: Vec<f64>) -> PyResult<f64> {
     empty(&args)?;
-    let len = Decimal::from(args.len());
-    let sum = sum_of(args)?;
-    Ok(sum / len)
+    let len = args.len() as f64;
+    let sum1: f64 = args.iter().sum();
+    Ok(sum1 / len)
 }
 
 #[pyfunction]
@@ -41,7 +38,7 @@ pub fn mean(args: Vec<Decimal>) -> PyResult<Decimal> {
 /// # 2
 /// print(max_value([0, -2, 4, 1, -7])) # it will print 4
 /// ```
-pub fn max_value(args: Vec<Decimal>) -> PyResult<Decimal> {
+pub fn max_value(args: Vec<f64>) -> PyResult<f64> {
     empty(&args)?;
     let mut biggest = args[0];
     for &i in &args {
@@ -64,7 +61,7 @@ pub fn max_value(args: Vec<Decimal>) -> PyResult<Decimal> {
 /// # 2 
 /// print(max_index([-1, -2, 0, -5, -7])) # it will print 2
 /// ```
-pub fn max_index(args: Vec<Decimal>) -> PyResult<usize> {
+pub fn max_index(args: Vec<f64>) -> PyResult<usize> {
     empty(&args)?;
     let mut biggest_index: usize = 0;
     for (i, &val) in args.iter().enumerate() {
@@ -87,7 +84,7 @@ pub fn max_index(args: Vec<Decimal>) -> PyResult<usize> {
 /// # 2
 /// print(min_value([123, 54, 3242, 2, 434, 0, -3, 322])) # it will print -3
 /// ```
-pub fn min_value(args: Vec<Decimal>) -> PyResult<Decimal> {
+pub fn min_value(args: Vec<f64>) -> PyResult<f64> {
     empty(&args)?;
     let mut smallest = args[0];
     for &i in &args {
@@ -109,7 +106,7 @@ pub fn min_value(args: Vec<Decimal>) -> PyResult<Decimal> {
 /// ```python
 /// print(min_index([0, 1, 2, 3])) # it will print 0
 /// ```
-pub fn min_index(args: Vec<Decimal>) -> PyResult<usize> {
+pub fn min_index(args: Vec<f64>) -> PyResult<usize> {
     empty(&args)?;
     let mut smallest: usize = 0;
     for (i, &val) in args.iter().enumerate() {
@@ -121,33 +118,33 @@ pub fn min_index(args: Vec<Decimal>) -> PyResult<usize> {
 }
 
 #[pyfunction] 
-pub fn sorted_list(mut args: Vec<Decimal>) -> PyResult<Vec<Decimal>> {
+pub fn sorted_list(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
     empty(&args)?;
-    args.sort();
+    args.sort_by(|a, b| a.partial_cmp(b).unwrap());
     Ok(args)
 }
 
 #[pyfunction]
-pub fn reversed_list(mut args: Vec<Decimal>) -> PyResult<Vec<Decimal>> {
+pub fn reversed_list(mut args: Vec<f64>) -> PyResult<Vec<f64>> {
     empty(&args)?;
     args.reverse();
     Ok(args)
 }
 
 #[pyfunction]
-pub fn count(a: Vec<Decimal>, x: Decimal) -> PyResult<u32> {
-    empty(&a)?;
-    let mut total = 0;
-    for i in &a {
+pub fn count(args: Vec<f64>, x: f64) -> PyResult<f64> {
+    empty(&args)?;
+    let mut total = 0.0;
+    for i in &args {
         if *i == x {
-            total += 1;
+            total += 1.0;
         }
     }
     Ok(total)
 }
 
 #[pyfunction]
-pub fn merge(mut list_1: Vec<Decimal>, args: Vec<Vec<Decimal>>) -> PyResult<Vec<Decimal>> {
+pub fn merge(mut list_1: Vec<f64>, args: Vec<Vec<f64>>) -> PyResult<Vec<f64>> {
     empty(&list_1)?;
     for i in args {
         list_1.extend(i)
@@ -156,25 +153,25 @@ pub fn merge(mut list_1: Vec<Decimal>, args: Vec<Vec<Decimal>>) -> PyResult<Vec<
 }
 
 #[pyfunction]
-pub fn median(a: Vec<Decimal>) -> PyResult<Decimal> {
-    empty(&a)?;
-    let sorted = sorted_list(a)?;
-    let mid = sorted.len() / 2;
-    if sorted.len() % 2 == 0 {
-        Ok((sorted[mid - 1] + sorted[mid]) / dec!(2))
+pub fn median(args: Vec<f64>) -> PyResult<f64> {
+    empty(&args)?;
+    let sorted = sorted_list(args)?;
+    let mid = (sorted.len() as f64 / 2.0) as usize;
+    if sorted.len() as f64 % 2.0 == 0.0 {
+        Ok((sorted[mid - 1] + sorted[mid]) / 2.0)
     } else {
         Ok(sorted[mid])
     }
 }
 
 #[pyfunction]
-pub fn unique(args: Vec<Decimal>) -> PyResult<Vec<Decimal>> {
+pub fn unique(args: Vec<f64>) -> PyResult<Vec<f64>> {
     empty(&args)?;
     let mut seen = HashSet::new();
     let mut result = Vec::new();
 
     for val in args {
-        if seen.insert(val) {
+        if seen.insert(val.to_bits()) {
             result.push(val);
         }
     }
@@ -183,7 +180,7 @@ pub fn unique(args: Vec<Decimal>) -> PyResult<Vec<Decimal>> {
 }
 
 #[pyfunction]
-pub fn get_range(args: Vec<Decimal>) -> PyResult<Decimal> {
+pub fn get_range(args: Vec<f64>) -> PyResult<f64> {
     empty(&args)?;
     Ok(max_value(args.clone())? - min_value(args)?)
 }
