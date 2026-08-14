@@ -14,9 +14,10 @@ use pyo3::exceptions::PyValueError;
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(log(100, 10)) # it will print 2
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(log(8, 2)) # it will print 3
 /// ```
 pub fn log(number: Decimal, base: Decimal) -> PyResult<Decimal> {
@@ -30,16 +31,17 @@ pub fn log(number: Decimal, base: Decimal) -> PyResult<Decimal> {
 /// `n` - a non-negative integer (the height)
 /// ### Examples
 /// ```python
+/// # 1
 /// print(tetration(2, 3)) # it will print 16
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(tetration(3, 4)) 
 /// # it will print:
 /// # print(tetration(3, 4))
 /// #       ~~~~~~~~~^^^^^^
 /// # ValueError: Result is too large to calculate (Overflow)!
-/// ```
-/// ```python
+/// 
+/// # 3
 /// print(tetration(3, 3)) # it will print 7625597484987
 /// ```
 pub fn tetration(a: i64, n: u32) -> PyResult<BigInt> {
