@@ -14,10 +14,11 @@ use crate::functions::*;
 /// `number` - an integer number
 /// ### Examples
 /// ```python
+/// # 1
+/// print(factorial(3)) # it will print 6 
+///
+/// # 2
 /// print(factorial(6)) # it will print 720
-/// ```
-/// ```python
-/// print(factorial(15)) # it will print 1307674368000
 /// ```
 pub fn factorial(number: BigInt) -> PyResult<BigInt> {
     if number < BigInt::zero() {
@@ -51,9 +52,10 @@ pub fn gcd_rust(a: BigInt, b: BigInt) -> BigInt {
 /// `args` - integer numbers
 /// ### Examples
 /// ```python
+/// # 1 
 /// print(gcd([1, 2, 5])) # it will print 1
-/// ```
-/// ```python
+/// 
+/// # 2 
 /// print(gcd([100, 60, 20])) # it will print 20
 /// ```
 pub fn gcd(args: Vec<BigInt>) -> PyResult<BigInt> {
@@ -69,9 +71,10 @@ pub fn gcd(args: Vec<BigInt>) -> PyResult<BigInt> {
 /// `args` - the list wih integer numbers
 /// ### Examples
 /// ```python
+/// # 1 
 /// print(lcm([100, 60, 20])) # it will print 300
-/// ```
-/// ```python
+/// 
+/// # 2 
 /// print(lcm([50, 33, 27])) # it will print 14850
 /// ```
 pub fn lcm(args: Vec<BigInt>) -> PyResult<BigInt> {
@@ -99,12 +102,13 @@ pub fn lcm(args: Vec<BigInt>) -> PyResult<BigInt> {
 #[pyfunction]
 /// Returns the list with Fibonacci sequence for a given `range`.
 /// ### Arguments
-/// `range` - an integer i64 number
+/// `range` - an integer number
 /// ### Examples
 /// ```python
+/// # 1 
 /// print(fibonacci(10)) # it will print [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
-/// ```
-/// ```python
+/// 
+/// # 2 
 /// print(fibonacci(4)) # it will print [0, 1, 1, 2]
 /// ```
 pub fn fibonacci(n: usize) -> PyResult<Vec<BigUint>> {
