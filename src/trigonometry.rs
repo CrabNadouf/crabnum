@@ -30,7 +30,7 @@ pub fn sin(number: f64) -> PyResult<f64> {
 /// print(csc(0)) # it will print inf
 /// 
 /// # 2
-/// print(csc(number_pi/4)) # it will print 1.4142135623730951
+/// print(csc(PI/4)) # it will print 1.4142135623730951
 /// ```
 pub fn csc(number: f64) -> PyResult<f64> {
     check_is_finite(number)?;
@@ -101,7 +101,7 @@ pub fn tan(number: f64) -> PyResult<f64> {
 /// print(cot(0)) # it will print inf
 ///
 /// # 2
-/// print(cot(number_pi/4)) # it will print 1.0000000000000002
+/// print(cot(PI/4)) # it will print 1.0000000000000002
 /// ```
 pub fn cot(number: f64) -> PyResult<f64> {
     check_is_finite(number)?;

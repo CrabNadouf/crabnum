@@ -10,6 +10,7 @@ mod number_theory;
 mod powers;
 mod rounding;
 mod trigonometry;
+mod consts;
 
 #[pymodule]
 fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -63,7 +64,7 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // class
     m.add_class::<class::Crabnum>()?;
 
-    // lists
+    // lists.rs
     m.add_function(wrap_pyfunction!(lists::mean, m)?)?;
     m.add_function(wrap_pyfunction!(lists::max_value, m)?)?;
     m.add_function(wrap_pyfunction!(lists::max_index, m)?)?;
@@ -76,5 +77,15 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lists::median, m)?)?;
     m.add_function(wrap_pyfunction!(lists::unique, m)?)?;
     m.add_function(wrap_pyfunction!(lists::get_range, m)?)?;
+
+    // consts.rs
+    m.add("PI", consts::PI)?;
+    m.add("E", consts::E)?;
+    m.add("GOLDEN_RATIO", consts::GOLDEN_RATIO)?;
+    m.add("SPEED_OF_LIGHT", consts::SPEED_OF_LIGHT)?;
+    m.add("GRAVITY", consts::GRAVITY)?;
+    m.add("PLANCK", consts::PLANCK)?;
+    m.add("AVOGADRO", consts::AVOGADRO)?;
+
     Ok(())
 }
