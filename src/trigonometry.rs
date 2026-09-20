@@ -9,9 +9,10 @@ use pyo3::prelude::*;
 /// `number` - a float number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(sin(0)) # it will print 0.0
-/// ```
-/// ```python
+///
+/// # 2
 /// print(sin(1.5707963267948966)) # it will print 1.0
 /// ```
 pub fn sin(number: f64) -> PyResult<f64> {
@@ -25,9 +26,10 @@ pub fn sin(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(csc(0)) # it will print inf
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(csc(number_pi/4)) # it will print 1.4142135623730951
 /// ```
 pub fn csc(number: f64) -> PyResult<f64> {
@@ -41,9 +43,10 @@ pub fn csc(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(cos(0)) # it will print 1.0
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(cos(2.0943951023931953)) # it will print -0.4999999999999998
 /// ```
 pub fn cos(number: f64) -> PyResult<f64> {
@@ -57,12 +60,13 @@ pub fn cos(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(sec(0)) # it will print 1.0
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(sec(5-4)) # it will print 1.8508157176809255
-/// ```
-/// ```python
+/// 
+/// # 3
 /// print(sec(0.14*0.66)) # it will print 1.0042841190233904
 /// ```
 pub fn sec(number: f64) -> PyResult<f64> {
@@ -76,9 +80,10 @@ pub fn sec(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(tan(0)) # it will print 0.0
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(tan(0.7853981633974483)) # it will print 0.9999999999999999
 /// ```
 pub fn tan(number: f64) -> PyResult<f64> {
@@ -92,9 +97,10 @@ pub fn tan(number: f64) -> PyResult<f64> {
 /// `number` - a float number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(cot(0)) # it will print inf
-/// ```
-/// ```python
+///
+/// # 2
 /// print(cot(number_pi/4)) # it will print 1.0000000000000002
 /// ```
 pub fn cot(number: f64) -> PyResult<f64> {

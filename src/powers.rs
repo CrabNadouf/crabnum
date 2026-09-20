@@ -11,10 +11,11 @@ use pyo3::prelude::*;
 /// `number` - a number
 /// ### Examples
 /// ```python
-/// print(square(3)) # it will print 9.0
-/// ```
-/// ```python
-/// print(square(10)) # it will print 100.0
+/// # 1
+/// print(square(3)) # it will print 9
+/// 
+/// # 2
+/// print(square(10)) # it will print 100
 /// ```
 pub fn square(number: Decimal) -> PyResult<Decimal> {
     Ok(number * number)
@@ -26,10 +27,11 @@ pub fn square(number: Decimal) -> PyResult<Decimal> {
 /// `number` - a number
 /// ### Examples
 /// ```python
-/// print(cube(2)) # it will print 8.0
-/// ```
-/// ```python
-/// print(cube(4)) # it will print 64.0
+/// # 1
+/// print(cube(2)) # it will print 8
+///
+/// # 2
+/// print(cube(4)) # it will print 64
 /// ```
 pub fn cube(number: Decimal) -> PyResult<Decimal> {
     Ok(number * number * number)
@@ -42,10 +44,11 @@ pub fn cube(number: Decimal) -> PyResult<Decimal> {
 /// `exp` - a number
 /// ### Examples
 /// ```python
-/// print(power(2, 5)) # it will print 32.0
-/// ```
-/// ```python
-/// print(power(7, 3)) # it will print 343.0
+/// # 1
+/// print(power(2, 5)) # it will print 32
+/// 
+/// # 2
+/// print(power(7, 3)) # it will print 343
 /// ```
 pub fn power(number: Decimal, exp: Decimal) -> PyResult<Decimal> {
     if exp == dec!(0) {
@@ -60,9 +63,10 @@ pub fn power(number: Decimal, exp: Decimal) -> PyResult<Decimal> {
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(square_root(25)) # it will print 5
-/// ```
-/// ```python
+///
+/// # 2
 /// print(square_root(64)) # it will print 8
 /// ```
 pub fn square_root(number: Decimal) -> PyResult<Decimal> {
@@ -78,12 +82,12 @@ pub fn square_root(number: Decimal) -> PyResult<Decimal> {
 /// `number` - a number
 /// ### Examples
 /// ```python
-/// print(cube_root(8)) # it will print 2.0
-/// ```
-/// ```python
+/// print(cube_root(8)) # it will print 2
+/// 
+/// # 2
 /// print(cube_root(1331)) # it will print 11
-/// ```
-/// ```python
+/// 
+/// # 3
 /// print(cube_root(343)) # it will print 7
 /// ```
 pub fn cube_root(number: Decimal) -> PyResult<Decimal> {
@@ -93,13 +97,14 @@ pub fn cube_root(number: Decimal) -> PyResult<Decimal> {
 #[pyfunction]
 /// Returns the `power`-th root of `number`.
 /// ### Arguments
-/// `number` - a number<br>
+/// `number` - a number <br>
 /// `power` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(root(1331, 3)) # it will print 11
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(root(6561, 4)) # it will print 9
 /// ```
 pub fn root(number: Decimal, power: Decimal) -> PyResult<Decimal> {

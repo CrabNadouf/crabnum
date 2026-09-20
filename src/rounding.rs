@@ -11,9 +11,10 @@ use pyo3::exceptions::PyValueError;
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(floor(5.7)) # it will print 5
-/// ```
-/// ```python
+/// 
+/// # 2
 /// print(floor(99.99)) # it will print 99
 /// ```
 pub fn floor(mut number: Decimal) -> PyResult<i64> {
@@ -27,10 +28,11 @@ pub fn floor(mut number: Decimal) -> PyResult<i64> {
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(ceil(99.1)) # it will print 100
-/// ```
-/// ```python
-/// print(ceil(54.33)) # it will print 55
+/// 
+/// # 2
+/// print(ceil(54.01)) # it will print 55
 /// ```
 pub fn ceil(number: Decimal) -> PyResult<i64> {
     Ok(number.ceil().to_i64().ok_or_else(|| PyValueError::new_err("Number is too large for i64"))?)
@@ -42,10 +44,11 @@ pub fn ceil(number: Decimal) -> PyResult<i64> {
 /// `number` - a number
 /// ### Examples
 /// ```python
+/// # 1
 /// print(absolute(-3)) # it will print 3
-/// ```
-/// ```python
-/// print(absolute(3)) # it will print 3.0
+/// 
+/// # 2
+/// print(absolute(3)) # it will print 3
 /// ```
 pub fn absolute(number: Decimal) -> PyResult<Decimal> {
     Ok(number.abs())
