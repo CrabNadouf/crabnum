@@ -79,13 +79,43 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lists::get_range, m)?)?;
 
     // consts.rs
+
+    // math.rs
     m.add("PI", consts::math::PI)?;
     m.add("E", consts::math::E)?;
     m.add("GOLDEN_RATIO", consts::math::GOLDEN_RATIO)?;
+    m.add("SILVER_RATIO", consts::math::SILVER_RATIO)?;
+    m.add("GAMMA", consts::math::GAMMA)?;
+    m.add("SQRT_2", consts::math::SQRT_2)?;
+    m.add("LN_2", consts::math::LN_2)?;
+    m.add("CATALAN", consts::math::CATALAN)?;
+    m.add("TAU", consts::math::TAU)?;
+    m.add("FEIGENBAUM_DELTA", consts::math::FEIGENBAUM_DELTA)?;
+    m.add("APERY", consts::math::APERY)?;
+    m.add("KHINCHIN", consts::math::KHINCHIN)?;
+
+    // physics.rs
     m.add("SPEED_OF_LIGHT", consts::physics::SPEED_OF_LIGHT)?;
     m.add("GRAVITY", consts::physics::GRAVITY)?;
-    m.add("PLANCK", consts::physics::PLANCK)?;
     m.add("AVOGADRO", consts::physics::AVOGADRO)?;
+
+    // Quantum & Atomic Physics
+    m.add("ELEMENTARY_CHARGE", consts::physics::ELEMENTARY_CHARGE)?;
+    m.add("ELECTRON_MASS", consts::physics::ELECTRON_MASS)?;
+    m.add("PROTON_MASS", consts::physics::PROTON_MASS)?;
+    m.add("NEUTRON_MASS", consts::physics::NEUTRON_MASS)?;
+    m.add("PLANCK", consts::physics::PLANCK)?;
+    m.add("REDUCED_PLANCK", consts::physics::REDUCED_PLANCK)?;
+    m.add("VACUUM_PERMITTIVITY", consts::physics::VACUUM_PERMITTIVITY)?;
+    m.add("VACUUM_PERMEABILITY", consts::physics::VACUUM_PERMEABILITY)?;
+
+    // Atomic Spectroscopy & Scales 
+    m.add("FINE_STRUCTURE", consts::physics::FINE_STRUCTURE)?;
+    m.add("BOHR_RADIUS", consts::physics::BOHR_RADIUS)?;
+    m.add("RYDBERG", consts::physics::RYDBERG)?;
+    m.add("HARTREE_ENERGY", consts::physics::HARTREE_ENERGY)?;
+    m.add("BOHR_MAGNETON", consts::physics::BOHR_MAGNETON)?;
+    m.add("ATOMIC_MASS_UNIT", consts::physics::ATOMIC_MASS_UNIT)?;
 
     Ok(())
 }
