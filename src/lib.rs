@@ -79,13 +79,13 @@ fn crabnum(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lists::get_range, m)?)?;
 
     // consts.rs
-    m.add("PI", consts::PI)?;
-    m.add("E", consts::E)?;
-    m.add("GOLDEN_RATIO", consts::GOLDEN_RATIO)?;
-    m.add("SPEED_OF_LIGHT", consts::SPEED_OF_LIGHT)?;
-    m.add("GRAVITY", consts::GRAVITY)?;
-    m.add("PLANCK", consts::PLANCK)?;
-    m.add("AVOGADRO", consts::AVOGADRO)?;
+    m.add("PI", consts::math::PI)?;
+    m.add("E", consts::math::E)?;
+    m.add("GOLDEN_RATIO", consts::math::GOLDEN_RATIO)?;
+    m.add("SPEED_OF_LIGHT", consts::physics::SPEED_OF_LIGHT)?;
+    m.add("GRAVITY", consts::physics::GRAVITY)?;
+    m.add("PLANCK", consts::physics::PLANCK)?;
+    m.add("AVOGADRO", consts::physics::AVOGADRO)?;
 
     Ok(())
 }
